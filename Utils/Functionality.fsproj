@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<Compile Include="Utils.fs" />
+	<Compile Include="Files.fs" />
+	<Compile Include="EffectSampleProvider.fs" />
+	<Compile Include="Streams.fs" />
+	<Compile Include="Effects.fs" />
+	<Compile Include="EffectOperations.fs" />
+	<Compile Include="Playback.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+</Project>
