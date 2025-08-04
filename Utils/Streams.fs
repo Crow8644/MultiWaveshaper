@@ -20,11 +20,12 @@ let makeOversampler (factor: int) (source: ISampleProvider) =
     let originalRate = source.WaveFormat.SampleRate
     let newRate = originalRate * factor
 
+    // The purpose of this chain is run the effects on a higher sample rate
     let upsampler: MediaFoundationResampler = new MediaFoundationResampler(source.ToWaveProvider(), newRate)
     currentEffectProvider <- Some (new EffectSampleProvider(upsampler.ToSampleProvider()))
 
     let downsampler: MediaFoundationResampler = new MediaFoundationResampler(currentEffectProvider.Value.ToWaveProvider(), originalRate)
-    downsampler.ToSampleProvider()
+    downsampler.ToSampleProvider()  // We still return a provider at the same sample rate as source
 
 // Get new provider
 let oversamplingChange(oversamplingRate: int) =
@@ -81,6 +82,9 @@ let getRepositionFunction =
 
 let getCurrentEffectProvider() =
     currentEffectProvider
+
+let getCurrentWaveIn() =
+    currentWaveIn
 
 let closeObjects() =
     match currentFileReader with

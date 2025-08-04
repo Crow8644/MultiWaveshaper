@@ -20,10 +20,15 @@ type Limiter_Effect(upper, lower, makeup) =
     member this.lowerLimit: float32 = lower
     member this.makeupGain: bool = makeup
 
+type Smooth_Distortion_Effect(factor) =
+    // A larger factor makes for a steeper curve
+    member this.distortionFactor: float32 = factor
+
 // A discriminated union which serves as our overaching effect type
 type EffectUnion =
     | Volume of Volume_Effect
     | Limiter of Limiter_Effect
+    | Smooth of Smooth_Distortion_Effect
 
 let volume_function (effect: Volume_Effect) (sample: float32): float32 =
     middleVal (sample * effect.volume) 1.0f -1.0f
@@ -42,9 +47,19 @@ let limiter_function (effect: Limiter_Effect) (sample: float32): float32 =
     else
         sample * multiplier
 
+let smooth_distortion_function (effect: Smooth_Distortion_Effect) (sample: float32): float32 =
+    // Using this as a multiplier ensures the presence of points (1, 1) and (-1, -1), preventing loss
+    let scaler = 1.0f / (tanh effect.distortionFactor)
+
+    sample
+    |> (*) effect.distortionFactor
+    |> tanh
+    |> (*) scaler
+
 // A method to access a partially applied version of a given effect function
 let getEffectFunction (effect: EffectUnion): float32->float32 =
     match effect with
     | Limiter (l) -> limiter_function l
     | Volume (v) -> volume_function v
+    | Smooth (s) -> smooth_distortion_function s
 
