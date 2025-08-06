@@ -23,6 +23,8 @@ let initializeFromFileUnchecked(oversampling: int) =
     |> Option.map outputDevice.Init
     |> ignore
 
+    EffectOperations.flush_effects() // Re-creates all effect functions
+
 let oversamplingChangeUnchecked(oversampling: int) =
     Streams.oversamplingChange(oversampling)
     |> outputDevice.Init

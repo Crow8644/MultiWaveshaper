@@ -12,6 +12,7 @@
                 <TabItem.Header>
                     <Button Name="add_effect_button" Content="Add Effect" Height="60" Width="60"></Button>
                 </TabItem.Header>
+                <Slider></Slider>
             </TabItem>
         </TabControl>
     </Grid>

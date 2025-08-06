@@ -26,7 +26,13 @@ namespace WaveshaperUI
             // Run tests on functions in Functionality here
             Playback.newFile(1);
             Thread.Sleep(400);
+            EffectOperations.createEffect(Effects.EffectType.Volume);
             Playback.play();
+        }
+        private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Microsoft.FSharp.Core.FSharpFunc<float, Microsoft.FSharp.Core.Unit> fSharpFunc = EffectOperations.getChangeBinding(0);
+            fSharpFunc.Invoke((float)e.NewValue / 10.0f);
         }
     }
 }

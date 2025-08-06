@@ -6,34 +6,50 @@ open Functionality.Utils
 
 type EffectType =
     | Volume = 0
-    | Limiter = 1
+    | HardDistortion = 1
     | SmoothDistortion = 2
     | Compression = 3
     | Custom = 4
 
+let DELTA: float32 = 0.0001f // The per sample rate of change for effect parameters
+
 // Individual effect types
-type Volume_Effect(volume) =
+type Volume2(volume) =
     member this.volume: float32 = volume
+
+type Volume_Effect = 
+    {
+    mutable smoothed_volume: float32
+    mutable volume: float32}
     
-type Limiter_Effect(upper, lower, makeup) =
+type Hard_Distortion_Effect2(upper, lower, makeup) =
     member this.upperLimit: float32 = upper
     member this.lowerLimit: float32 = lower
     member this.makeupGain: bool = makeup
 
-type Smooth_Distortion_Effect(factor) =
-    // A larger factor makes for a steeper curve
-    member this.distortionFactor: float32 = factor
+type Hard_Distortion_Effect =
+    {
+    mutable upperLimit: float32
+    mutable lowerLimit: float32
+    mutable makeupGain: bool}
+
+type Smooth_Distortion_Effect =
+    // A larger factor makes for a steeper curve and more distortion
+    {mutable distortionFactor: float32}
 
 // A discriminated union which serves as our overaching effect type
 type EffectUnion =
     | Volume of Volume_Effect
-    | Limiter of Limiter_Effect
+    | HardLimit of Hard_Distortion_Effect
     | Smooth of Smooth_Distortion_Effect
 
 let volume_function (effect: Volume_Effect) (sample: float32): float32 =
-    middleVal (sample * effect.volume) 1.0f -1.0f
+    // Adjusts the volume slightly every frame
+    effect.smoothed_volume <- smoothChange effect.smoothed_volume effect.volume
 
-let limiter_function (effect: Limiter_Effect) (sample: float32): float32 =
+    middleVal (sample * effect.smoothed_volume) -1.0f 1.0f
+
+let hard_distortion_function (effect: Hard_Distortion_Effect) (sample: float32): float32 =
     let multiplier = 
         if effect.makeupGain then
             // Calculate make-up gain based on the lesser of the two limits so we don't cause clipping
@@ -59,7 +75,6 @@ let smooth_distortion_function (effect: Smooth_Distortion_Effect) (sample: float
 // A method to access a partially applied version of a given effect function
 let getEffectFunction (effect: EffectUnion): float32->float32 =
     match effect with
-    | Limiter (l) -> limiter_function l
+    | HardLimit (l) -> hard_distortion_function l
     | Volume (v) -> volume_function v
     | Smooth (s) -> smooth_distortion_function s
-

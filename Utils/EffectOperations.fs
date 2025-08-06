@@ -4,7 +4,7 @@ open Effects
 
 let mutable effects: EffectUnion list = List.empty<Effects.EffectUnion>
 
-let mutable current_effect: EffectUnion = Limiter(new Effects.Limiter_Effect(1.0f, 1.0f, false))
+let mutable current_effect: EffectUnion = Volume({volume = 1.0f; smoothed_volume = 1.0f})
 
 // Updates all effects functions using current effects
 // To be called when something is changed, for example when a new SampleProvider is created
@@ -19,8 +19,10 @@ let createEffect(effectType: Effects.EffectType) =
     // Built in here are the defaults for each effect type
     if Streams.getCurrentEffectProvider().IsSome then
         match effectType with
-        | Effects.EffectType.Limiter -> current_effect <- Limiter(new Effects.Limiter_Effect(0.8f, 0.8f, false))
-        | Effects.EffectType.Volume -> current_effect <- Volume(new Effects.Volume_Effect(1.0f))
+        | Effects.EffectType.HardDistortion -> 
+            current_effect <- HardLimit({upperLimit = 0.8f; lowerLimit = 0.8f; makeupGain = false})
+        | Effects.EffectType.Volume -> 
+            current_effect <- Volume({volume = 1.0f; smoothed_volume = 1.0f})
         | _ -> ()
 
         // Mirrors the same effect for both the effects list and the effect function list
@@ -28,6 +30,8 @@ let createEffect(effectType: Effects.EffectType) =
             List.append effects [current_effect]
         Streams.getCurrentEffectProvider().Value.doListProccess(fun x -> 
             List.append x [Effects.getEffectFunction(current_effect)])
+        true
+    else false
     
 
 // Remove an effect
@@ -40,4 +44,14 @@ let removeEffect(position: int) =
 let moveEffect(sourcePos: int, destinationPos: int) =
     ()
 
-// Change an effect parameter
+let getChangeBinding(port: int) =
+    match current_effect with
+    | HardLimit (l) -> (fun x -> ())
+    | Volume (v) -> Volume.change_volume v
+    | Smooth (s) -> (fun x -> ())
+
+let getBinding() =
+    match current_effect with
+    | HardLimit (l) -> &l.upperLimit
+    | Volume (v) -> &v.volume
+    | Smooth (s) -> &s.distortionFactor

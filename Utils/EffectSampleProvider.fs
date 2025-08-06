@@ -2,6 +2,7 @@
 
 open NAudio.Wave
 open System
+open System.Threading
 
 type EffectSampleProvider(src: ISampleProvider) =
     let source: ISampleProvider = src
@@ -26,12 +27,13 @@ type EffectSampleProvider(src: ISampleProvider) =
             let samplesRead = source.Read(buffer, offset, count)
 
             // Runs each sample through each effect
-            lock listLock (fun _ ->
-            Array.mapi 
-                (fun (i: int) (s: float32) -> buffer[i] <- (effects |> List.fold (fun acc f -> f acc) s)) 
-                buffer
+            lock listLock (fun _ -> 
+            Array.map
+                (fun (i: int) -> buffer[i] <- (effects |> List.fold (fun acc f -> f acc) buffer[i]))
+                [|offset..(offset + samplesRead - 1)|]              // Runs through all necessary indecies
                 |> ignore
             )
+
             samplesRead
         member this.WaveFormat: WaveFormat = 
             source.WaveFormat

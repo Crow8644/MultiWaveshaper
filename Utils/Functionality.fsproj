@@ -12,6 +12,8 @@
 	<Compile Include="EffectSampleProvider.fs" />
 	<Compile Include="Streams.fs" />
 	<Compile Include="Effects.fs" />
+	<Compile Include="EffectSetters\Volume.fs" />
+	<Compile Include="EffectSetters\HardClipping.fs" />
 	<Compile Include="EffectOperations.fs" />
 	<Compile Include="Playback.fs" />
 	<Compile Include="Recording.fs" />
