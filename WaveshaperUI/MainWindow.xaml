@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WaveshaperUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Closed="Window_Closed">
     <Grid>
         <Button RenderTransformOrigin="0.482,0.514" Height="80" Width="180" Content="Run Tests" FontSize="30" Click="Button_Click"/>
         <Slider Name="VolumeSlider" ValueChanged="VolumeSlider_ValueChanged" Value="10" Height="10" VerticalAlignment="Top"></Slider>
+        <local:VolumePanel></local:VolumePanel>
     </Grid>
 </Window>

@@ -4,9 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WaveshaperUI"
+             xmlns:oxy="http://oxyplot.org/wpf" 
+             xmlns:oxy1="clr-namespace:OxyPlot.Axes;assembly=OxyPlot"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="350" d:DesignWidth="700">
+    <UserControl.Resources>
+        <local:SliderPercentConverter x:Key="SliderPercentConverter" />
+    </UserControl.Resources>
     <Grid>
-            
+        <oxy:PlotView Height="300" Width="300" HorizontalAlignment="Left" Margin="25,25"></oxy:PlotView>
+        <Slider Name="VolumeSlider" Width="320" VerticalAlignment="Top" Height="50" HorizontalAlignment="Right" Margin="25,25"></Slider>
+        <TextBox Name="VolumeDisplay" Height="25" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,53,30,0" Text="{Binding Path=Value, ElementName=VolumeSlider, UpdateSourceTrigger=LostFocus, Converter={StaticResource SliderPercentConverter}}"></TextBox>
+        <Label HorizontalAlignment="Right" Content="Volume" Foreground="White" VerticalAlignment="Top" Margin="0,50,80,0"></Label>
     </Grid>
 </UserControl>

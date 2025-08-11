@@ -4,54 +4,56 @@ open Effects
 
 let mutable effects: EffectUnion list = List.empty<Effects.EffectUnion>
 
-let mutable current_effect: EffectUnion = Volume({volume = 1.0f; smoothed_volume = 1.0f})
-
 // Updates all effects functions using current effects
 // To be called when something is changed, for example when a new SampleProvider is created
 let flush_effects() =
     let x = List.map Effects.getEffectFunction effects
 
-    Streams.getCurrentEffectProvider().Value.setEffects x
+    let ef = Streams.currentEffectProvider
+    match ef with
+    | Some(provider) -> provider.setEffects x
+    | None -> ()
 
-
-// Create an effect
+// Create a new effect at the end of the list
 let createEffect(effectType: Effects.EffectType) =
-    // Built in here are the defaults for each effect type
-    if Streams.getCurrentEffectProvider().IsSome then
-        match effectType with
-        | Effects.EffectType.HardDistortion -> 
-            current_effect <- HardLimit({upperLimit = 0.8f; lowerLimit = 0.8f; makeupGain = false})
-        | Effects.EffectType.Volume -> 
-            current_effect <- Volume({volume = 1.0f; smoothed_volume = 1.0f})
-        | _ -> ()
+    let newEffect = Effects.makeDefault(effectType)
 
-        // Mirrors the same effect for both the effects list and the effect function list
-        effects <- 
-            List.append effects [current_effect]
-        Streams.getCurrentEffectProvider().Value.doListProccess(fun x -> 
-            List.append x [Effects.getEffectFunction(current_effect)])
+    // Mirrors the same effect for both the effects list and the effect function list
+    effects <- 
+        List.append effects [newEffect]
+
+    let ef = Streams.currentEffectProvider
+    match ef with
+    | Some(provider) -> provider.doListProccess(fun x -> 
+        List.append x [Effects.getEffectFunction(newEffect)])
+    | None -> ()
+    Some(newEffect)
+
+// Remove an effect from any position, returns true on success and false on failure
+let removeEffect(position: int): bool =
+    try
+        effects <- List.removeAt position effects
+
+        let ef = Streams.currentEffectProvider
+        match ef with
+        | Some(provider) -> provider.doListProccess(List.removeAt position)
+        | None -> ()
         true
-    else false
-    
-
-// Remove an effect
-let removeEffect(position: int) =
-    effects <- List.removeAt position effects
-
-    // Streams.getCurrentProvider()
+    with
+        | :? System.IndexOutOfRangeException -> false
 
 // Move an effect
 let moveEffect(sourcePos: int, destinationPos: int) =
     ()
 
-let getChangeBinding(port: int) =
-    match current_effect with
+let getChangeBinding (effect: EffectUnion) (port: int) =
+    match effect with
     | HardLimit (l) -> (fun x -> ())
     | Volume (v) -> Volume.change_volume v
     | Smooth (s) -> (fun x -> ())
 
-let getBinding() =
-    match current_effect with
+let getBinding (effect: EffectUnion) =
+    match effect with
     | HardLimit (l) -> &l.upperLimit
     | Volume (v) -> &v.volume
     | Smooth (s) -> &s.distortionFactor

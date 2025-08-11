@@ -10,6 +10,7 @@
 	<Compile Include="Utils.fs" />
 	<Compile Include="Files.fs" />
 	<Compile Include="EffectSampleProvider.fs" />
+	<Compile Include="OldStreams.fs" />
 	<Compile Include="Streams.fs" />
 	<Compile Include="Effects.fs" />
 	<Compile Include="EffectSetters\Volume.fs" />

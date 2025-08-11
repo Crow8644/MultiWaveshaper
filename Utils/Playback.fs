@@ -3,6 +3,7 @@ open NAudio.Wave
 open Functionality
 open System.Threading
 open System.Threading.Tasks
+open System.ComponentModel
 
 // Playback's custom exception for threading errors
 exception PlaybackThreadingError of string
@@ -18,16 +19,20 @@ outputDevice.PlaybackStopped.Add(fun args ->
 )
 
 let initializeFromFileUnchecked(oversampling: int) =
-    Files.getAudioFile()
-    |> Streams.newFileProvider oversampling
+    Streams.newFileProvider oversampling
     |> Option.map outputDevice.Init
+    |> Option.map EffectOperations.flush_effects // Re-creates all effect functions. Will only run if the previous function returned Some(), which means it was successful
     |> ignore
 
-    EffectOperations.flush_effects() // Re-creates all effect functions
+let initializeAudioInUnchecked(oversampling: int) =
+    Streams.newLiveListen oversampling
+    |> Option.map outputDevice.Init
+    |> Option.map EffectOperations.flush_effects // Re-creates all effect functions. Will only run if the previous function returned Some(), which means it was successful
+    |> ignore
 
 let oversamplingChangeUnchecked(oversampling: int) =
     Streams.oversamplingChange(oversampling)
-    |> outputDevice.Init
+    |> Option.map outputDevice.Init
     
 // All three of the following functions return true on success and false on failure
 
@@ -53,7 +58,21 @@ let stop() =
         true
     with | ex -> false
 
-let stopAndDo (nextAction: _->unit) (errorAction: _->unit)=
+//let playIn() =
+//    match Streams.currentWaveIn with
+//    | Some(wi: WaveInEvent) -> 
+//        wi.StartRecording()
+//        play()
+//    | None -> false
+        
+//let pauseIn() =
+//    match Streams.currentWaveIn with
+//    | Some(wi: WaveInEvent) -> 
+//        wi.StopRecording()
+//        pause()
+//    | None -> false
+
+let stopAndDo (nextAction: _->unit) (errorAction: _->unit) =
     // Tests if the device is already stopped, so the passed action still happens
     if outputDevice.PlaybackState = PlaybackState.Stopped then 
         nextAction()
@@ -73,15 +92,34 @@ let stopAndDo (nextAction: _->unit) (errorAction: _->unit)=
     else
         errorAction()
 
-let newFile(oversampling: int) = stopAndDo (fun _ -> initializeFromFileUnchecked oversampling) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
+// Alternative version of stop and do for when the nextAction requires being run in the caller's thread (usually the UI thread)
+let stopAndDoSync (nextAction: _->unit) (errorAction: _->unit) =
+    if outputDevice.PlaybackState = PlaybackState.Stopped then 
+        nextAction()
+    // stopSignal may have been set several times before this point, so we need to reset it
+    elif stopSignal.Reset() then
+        let bw = new BackgroundWorker()
+        bw.DoWork.Add (fun _ -> stopSignal.WaitOne() |> ignore)
+        bw.RunWorkerCompleted.Add(fun _ -> nextAction())
 
-let oversamplingChanged(oversampling: int) = stopAndDo (fun _ -> oversamplingChangeUnchecked oversampling) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
+        bw.RunWorkerAsync()
+
+        outputDevice.Stop()
+    else
+        errorAction()
+
+
+let newFile(oversampling: int) = stopAndDoSync (fun _ -> initializeFromFileUnchecked oversampling) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
+
+let newAudioIn(oversampling: int) = stopAndDoSync (fun _ -> initializeAudioInUnchecked oversampling) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
+
+let oversamplingChanged(oversampling: int) = stopAndDoSync (fun _ -> oversamplingChangeUnchecked oversampling |> ignore) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
 
 let closeObjects() =
     // Adds the continuation to the PlaybackStopped event, so they will only trigger after playback has stopped
     outputDevice.PlaybackStopped.Add(fun args ->
         outputDevice.Dispose()
-        Streams.closeObjects()      // Passes on responsability for any sample providers to the Streams module
+        Streams.disposeCurrentProviders()      // Passes on responsability for any sample providers to the Streams module
     )
 
     outputDevice.Stop()             // Eventually triggers the above, but stopping is on another thread and takes a moment

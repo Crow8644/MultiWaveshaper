@@ -3,92 +3,125 @@
 open NAudio
 open NAudio.Wave
 open EffectSampleProvider
+open System.IO
+open System
 
-let mutable currentEffectProvider: option<EffectSampleProvider> = None
-let mutable currentWaveIn: option<WaveInProvider> = None
-let mutable currentFileReader: option<AudioFileReader> = None                // I imagine this will stay none if we're working with live audio
-
-//let w = new SampleChannel(new WaveInProvider(new WaveIn()))
-
-// Actions:
-
-let makeStandard (source: ISampleProvider) =
-    currentEffectProvider <- Some(new EffectSampleProvider(source))
-    currentEffectProvider.Value
-
-let makeOversampler (factor: int) (source: ISampleProvider) =
-    let originalRate = source.WaveFormat.SampleRate
-    let newRate = originalRate * factor
-
-    // The purpose of this chain is run the effects on a higher sample rate
-    let upsampler: MediaFoundationResampler = new MediaFoundationResampler(source.ToWaveProvider(), newRate)
-    currentEffectProvider <- Some (new EffectSampleProvider(upsampler.ToSampleProvider()))
-
-    let downsampler: MediaFoundationResampler = new MediaFoundationResampler(currentEffectProvider.Value.ToWaveProvider(), originalRate)
-    downsampler.ToSampleProvider()  // We still return a provider at the same sample rate as source
-
-// Get new provider
-let oversamplingChange(oversamplingRate: int) =
-    if oversamplingRate > 1 then
-        if currentFileReader.IsSome then
-            makeOversampler oversamplingRate currentFileReader.Value
-        elif currentWaveIn.IsSome then
-            // Live playback version
-            makeOversampler oversamplingRate (currentWaveIn.Value.ToSampleProvider())
-        else
-            currentEffectProvider.Value
+let generateFileProvider (filename: string): option<AudioFileReader> =
+    if File.Exists filename then
+        Some(new AudioFileReader(filename))
     else
-        // This section runs if we use a 
-        match currentFileReader with
-        | Some(ws) ->
-            currentEffectProvider <- Some(new EffectSampleProvider(ws))
-        | None ->
-            let filename = Files.getAudioFile()
-            if filename.IsSome then
-                currentFileReader <- Some(new AudioFileReader(filename.Value))
-                currentEffectProvider <- Some(new EffectSampleProvider(currentFileReader.Value))
+        None
 
-        currentEffectProvider.Value // Return the effect provider, so playback can work well
+let generateLiveListen (): option<WaveInEvent> =
+    try
+        let w = new WaveInEvent()
+        w.RecordingStopped.Add(fun x -> w.Dispose())
 
-let newFileProvider (oversamplingRate: int) (filename: option<string>): option<ISampleProvider> =
-    if filename.IsSome then
-        currentFileReader <- Some(new AudioFileReader(filename.Value))
-        currentWaveIn <- None
-        if oversamplingRate > 1 then
-            Some(makeOversampler oversamplingRate currentFileReader.Value)
-        else
-            // Using this function makes consistancy with above
-            // And serves to change the type from option<EffectSampleProvider> to option<ISampleProvider> (vs. just returning currentEffectProvider)
-            Some(makeStandard currentFileReader.Value)
-    else None
+        w.StartRecording()
+        Some(w)
+    with 
+        | ex -> None
 
-let newLiveListen (oversamplingRate: int): option<ISampleProvider> =
-    currentWaveIn <- Some(new WaveInProvider(new WaveIn()))
+let generateEffectProvider (oversampling: int) (source: ISampleProvider): option<EffectSampleProvider> =
+    if oversampling = 1 then
+        Some(new EffectSampleProvider(source))
+    elif oversampling > 1 then
+        let newRate = source.WaveFormat.SampleRate * oversampling
+
+        // The purpose of this chain is run the effects on a higher sample rate
+        let upsampler: MediaFoundationResampler = new MediaFoundationResampler(source.ToWaveProvider(), newRate)
+        Some (new EffectSampleProvider(upsampler.ToSampleProvider()))
+    else
+        None
+
+let regenerateEffectProvider (lastProvider: EffectSampleProvider) (oversampling: int) (source: ISampleProvider): option<EffectSampleProvider> =
+    match generateEffectProvider oversampling source with
+    | Some(newProvider) -> 
+        newProvider.setEffects lastProvider.getEffects
+        Some(newProvider)
+    | None -> None
+
+// This function tries to regenerate the provider, and then generates it from scratch if it can't
+let tryRegenerateEffectProvider (maybeLastProvider: option<EffectSampleProvider>) (oversampling: int) (source: ISampleProvider): option<EffectSampleProvider> =
+    match maybeLastProvider with
+    | Some(provider) -> regenerateEffectProvider provider oversampling source
+    | None -> generateEffectProvider oversampling source
+
+let generateFinalOutput (oversampling: int) (source: ISampleProvider): option<ISampleProvider> =
+    if oversampling = 1 then
+        Some(source)
+    elif oversampling > 1 then
+        let originalRate: int = source.WaveFormat.SampleRate / oversampling
+
+        let downsampler: MediaFoundationResampler = new MediaFoundationResampler(source.ToWaveProvider(), originalRate)
+        Some(downsampler.ToSampleProvider())
+    else
+        None
+
+// Since these important streams
+// (1) Cannot be reconstructed easily from current state
+// (2) Are accessed asynchronously upon input events from several other modules
+// (3) Are expensive to recreate unecessarily when only some of then need to change
+// As such, the easiest way to handle them is to break with functional standards and make them mutable values
+
+let mutable currentWaveIn: option<WaveInEvent> = None                       // Saved to avoid recreation when oversampling changes
+let mutable currentFileReader: option<AudioFileReader> = None               
+let mutable currentEffectProvider: option<EffectSampleProvider> = None      // Accessed by Effects module to set list values
+let mutable currentFinalOutput: option<ISampleProvider> = None              // Accessed in order to record to files
+
+let disposeCurrentProviders() =
+    match currentWaveIn with
+    | Some(w) -> w.StopRecording()
+    | None -> ()
+
+    match currentFileReader with
+    | Some(fr) -> fr.Dispose()
+    | None -> ()
+
+let newFileProvider (oversampling: int) =
+    disposeCurrentProviders()
+    currentWaveIn <- None
+
+    // This section is somewhat more verbose because we store each value on the way
+    // But conceptually, this is just a monadic bind of each generative step
+    currentFileReader <- Files.getAudioFile() |> Option.bind generateFileProvider
+    currentEffectProvider <- currentFileReader |> Option.bind (tryRegenerateEffectProvider currentEffectProvider oversampling)
+    currentFinalOutput <- currentEffectProvider |> Option.bind (generateFinalOutput oversampling)
+
+    currentFinalOutput      // Return and save
+
+let newLiveListen (oversampling: int) =
+    disposeCurrentProviders()
     currentFileReader <- None
-    if oversamplingRate > 1 then
-          Some(makeOversampler oversamplingRate (currentWaveIn.Value.ToSampleProvider()))
-    else
-        // Using this function makes consistancy with above
-        // And serves to change the type from option<EffectSampleProvider> to option<ISampleProvider> (vs. just returning currentEffectProvider)
-        Some(makeStandard (currentWaveIn.Value.ToSampleProvider()))
 
-// Get current provider and repositioning function
+    currentWaveIn <- generateLiveListen()
+    currentEffectProvider <-
+        currentWaveIn 
+        |> Option.bind (fun x -> Some((new WaveInProvider(x)).ToSampleProvider()))      // Here we have to convert the waveIn into a usable ISampleProvider
+        |> Option.bind (tryRegenerateEffectProvider currentEffectProvider oversampling)
+    currentFinalOutput <- currentEffectProvider |> Option.bind (generateFinalOutput oversampling)
 
-// Returns a function that can be used to set the position in the track
+    currentFinalOutput      // Return and save
+
+let oversamplingChange (oversampling: int) =
+    match currentWaveIn with
+    | Some(wi) ->
+        currentEffectProvider <-
+            Some((new WaveInProvider(wi)).ToSampleProvider())
+            |> Option.bind (tryRegenerateEffectProvider currentEffectProvider oversampling)
+        currentFinalOutput <- currentEffectProvider |> Option.bind (generateFinalOutput oversampling)
+
+        currentFinalOutput
+    | None ->
+        match currentFileReader with
+        | Some(fr) ->
+            currentEffectProvider <- currentFileReader |> Option.bind (tryRegenerateEffectProvider currentEffectProvider oversampling)
+            currentFinalOutput <- currentEffectProvider |> Option.bind (generateFinalOutput oversampling)
+
+            currentFinalOutput      // Return and save
+        | None -> None
+
 let getRepositionFunction =
     match currentFileReader with
     | Some(ws) -> (fun x -> ws.Position <- x)
     | None -> (fun _ -> ())                     // Return a useless function when doing live processing
-
-let getCurrentEffectProvider() =
-    currentEffectProvider
-
-let getCurrentWaveIn() =
-    currentWaveIn
-
-let closeObjects() =
-    match currentFileReader with
-    | Some(ws) -> ws.Dispose()
-    | None -> ()
-    //match currentWaveIn with
-    //| Some(wi) -> wi.

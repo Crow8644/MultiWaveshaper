@@ -24,15 +24,19 @@ namespace WaveshaperUI
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // Run tests on functions in Functionality here
-            Playback.newFile(1);
-            Thread.Sleep(400);
+            Playback.newAudioIn(2);
             EffectOperations.createEffect(Effects.EffectType.Volume);
-            Playback.play();
+            //Playback.play();
         }
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Microsoft.FSharp.Core.FSharpFunc<float, Microsoft.FSharp.Core.Unit> fSharpFunc = EffectOperations.getChangeBinding(0);
-            fSharpFunc.Invoke((float)e.NewValue / 10.0f);
+            //Microsoft.FSharp.Core.FSharpFunc<float, Microsoft.FSharp.Core.Unit> fSharpFunc = EffectOperations.getChangeBinding(0);
+            //fSharpFunc.Invoke((float)e.NewValue / 10.0f);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Playback.closeObjects();
         }
     }
 }

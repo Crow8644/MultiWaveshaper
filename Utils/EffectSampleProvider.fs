@@ -16,6 +16,8 @@ type EffectSampleProvider(src: ISampleProvider) =
             effects <- newList
         )
 
+    member this.getEffects = effects
+
     // Applies a funtion to effects and resaves it, protecting the mutable list
     member this.doListProccess (proccess: ((float32->float32) list -> (float32->float32) list)) =
         lock listLock (fun _ ->

@@ -5,7 +5,7 @@
 module Recording
 
 let startRecording(oversampling: int) =
-    match Streams.getCurrentWaveIn() with
+    match Streams.currentWaveIn with
     | Some(wi) -> 
         wi
         true
