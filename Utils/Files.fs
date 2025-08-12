@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Windows
 open Microsoft.Win32
+open NAudio.Wave
 
 // default_path holds the last used directory, which we restore to if another file is selected
 // We start the proccess trying to use this user profile's directory
@@ -48,4 +49,23 @@ let getAudioFile(): option<string> =
         Some dialog.FileName
     else 
         None
-        
+       
+let saveToUserSelectedStream (inStream: ISampleProvider) =
+    let dialog: SaveFileDialog = new SaveFileDialog()
+
+    if not (Directory.Exists default_path)
+    then if Directory.Exists userFolder then default_path <- userFolder else default_path <- "c:\\"
+
+    // Set dialog properties
+    dialog.InitialDirectory <- default_path
+    dialog.Filter <- "WAV Files|*.wav"
+    dialog.Title <- "Chose where to save the processed file"
+
+    if dialog.ShowDialog().Value && File.Exists dialog.FileName then
+        let fs: Stream = dialog.OpenFile()
+        // This static member writes out a wave file. !!THIS ONLY WORKS IF STREAM RETURNS 0 AT THE END!!
+        WaveFileWriter.WriteWavFileToStream(fs, inStream.ToWaveProvider())
+
+        Some(dialog.FileName)
+    else
+        None
