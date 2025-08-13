@@ -24,9 +24,10 @@ namespace WaveshaperUI
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // Run tests on functions in Functionality here
-            Playback.newAudioIn(2);
-            EffectOperations.createEffect(Effects.EffectType.Volume);
+            Playback.newFile(1);
+            EffectOperations.createEffect(Effects.EffectType.SmoothDistortion);
             //Playback.play();
+            Recording.saveCurrentFile();
         }
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -37,6 +38,16 @@ namespace WaveshaperUI
         private void Window_Closed(object sender, EventArgs e)
         {
             Playback.closeObjects();
+        }
+
+        private void CommandAdd_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            // TODO: Connect to selector panel
+        }
+
+        private void CommandAdd_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+
         }
     }
 }

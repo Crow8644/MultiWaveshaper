@@ -19,7 +19,7 @@ namespace WaveshaperUI
     /// <summary>
     /// Interaction logic for VolumePanel.xaml
     /// </summary>
-    public partial class VolumePanel : UserControl
+    public partial class VolumePanel : EffectPanel
     {
         public VolumePanel()
         {
@@ -43,11 +43,10 @@ namespace WaveshaperUI
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string)
+            if (value is string s) // Using pattern matching to convert value to string s
             {
                 try
                 {
-                    string s = value.ToString();
                     return double.Parse(s) * 10.0;
                 }
                 catch

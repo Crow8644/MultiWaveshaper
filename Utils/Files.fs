@@ -50,6 +50,17 @@ let getAudioFile(): option<string> =
     else 
         None
        
+[<TailCall>]
+let rec writeAllBuffers (writer: WaveFileWriter) (inProvider: IWaveProvider) =
+    let buffer: byte array = Array.zeroCreate inProvider.WaveFormat.AverageBytesPerSecond
+
+    let bytesRead = inProvider.Read(buffer, 0, Array.length buffer)
+    if not (bytesRead = 0) && writer.Position < (int64 inProvider.WaveFormat.AverageBytesPerSecond * 600L) then
+        writer.Write(buffer, 0, bytesRead)
+        writeAllBuffers writer inProvider   // Recursive call
+    
+    // Break case is when no more bytes are read or the 10 minute limit is reached
+
 let saveToUserSelectedStream (inStream: ISampleProvider) =
     let dialog: SaveFileDialog = new SaveFileDialog()
 
@@ -61,10 +72,15 @@ let saveToUserSelectedStream (inStream: ISampleProvider) =
     dialog.Filter <- "WAV Files|*.wav"
     dialog.Title <- "Chose where to save the processed file"
 
-    if dialog.ShowDialog().Value && File.Exists dialog.FileName then
-        let fs: Stream = dialog.OpenFile()
-        // This static member writes out a wave file. !!THIS ONLY WORKS IF STREAM RETURNS 0 AT THE END!!
-        WaveFileWriter.WriteWavFileToStream(fs, inStream.ToWaveProvider())
+    if dialog.ShowDialog().Value && not (dialog.FileName = "") then
+        let fs: FileStream = dialog.OpenFile() :?> FileStream
+        
+        let writer: WaveFileWriter = new WaveFileWriter(fs, inStream.WaveFormat) // This object writes out a wave file
+
+        // Expects the stream to return 0 at the end, but there is also a 10 minute recording limit
+        writeAllBuffers writer (inStream.ToWaveProvider())
+        fs.Flush()
+        writer.Dispose() // This ensures the file header is correct, making a valid WAV file
 
         Some(dialog.FileName)
     else
