@@ -12,8 +12,8 @@
         <local:SliderPercentConverter x:Key="SliderPercentConverter" />
     </local:EffectPanel.Resources>
     <Grid>
-        <oxy:PlotView Height="300" Width="300" HorizontalAlignment="Left" Margin="25,25"></oxy:PlotView>
-        <Slider Name="VolumeSlider" Width="320" VerticalAlignment="Top" Height="50" HorizontalAlignment="Right" Margin="25,25"></Slider>
+        <oxy:PlotView Name="MyPlotView" Model="{Binding DisplayModel}" Height="300" Width="300" HorizontalAlignment="Left" Margin="25,25"></oxy:PlotView>
+        <Slider Name="VolumeSlider" Width="320" VerticalAlignment="Top" Height="50" HorizontalAlignment="Right" Margin="25,25" ValueChanged="VolumeSlider_ValueChanged"></Slider>
         <TextBox Name="VolumeDisplay" Height="25" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,53,30,0" Text="{Binding Path=Value, ElementName=VolumeSlider, UpdateSourceTrigger=LostFocus, Converter={StaticResource SliderPercentConverter}}"></TextBox>
         <Label HorizontalAlignment="Right" Content="Volume" Foreground="White" VerticalAlignment="Top" Margin="0,50,80,0"></Label>
     </Grid>

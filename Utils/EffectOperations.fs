@@ -27,7 +27,9 @@ let createEffect(effectType: Effects.EffectType) =
     | Some(provider) -> provider.doListProccess(fun x -> 
         List.append x [Effects.getEffectFunction(newEffect)])
     | None -> ()
-    Some(newEffect)
+    newEffect
+
+// A version of the function that creates a default if 
 
 // Remove an effect from any position, returns true on success and false on failure
 let removeEffect(position: int): bool =
@@ -46,14 +48,21 @@ let removeEffect(position: int): bool =
 let moveEffect(sourcePos: int, destinationPos: int) =
     ()
 
-let getChangeBinding (effect: EffectUnion) (port: int) =
-    match effect with
-    | HardLimit (l) -> (fun x -> ())
-    | Volume (v) -> Volume.change_volume v
-    | Smooth (s) -> (fun x -> ())
+//let getChangeBinding (effect: EffectUnion) (port: int) =
+//    match effect with
+//    | HardLimit (l) -> (fun x -> ())
+//    | Volume (v) -> Volume.change_volume v
+//    | Smooth (s) -> (fun x -> ())
 
-let getBinding (effect: EffectUnion) =
+//let getBinding (effect: EffectUnion) =
+//    match effect with
+//    | HardLimit (l) -> &l.upperLimit
+//    | Volume (v) -> &v.volume
+//    | Smooth (s) -> &s.distortionFactor
+
+// Converts an EffectUnion to a dereferenced object, which helps use in UI objects
+let unpackEffect (effect: EffectUnion): obj =
     match effect with
-    | HardLimit (l) -> &l.upperLimit
-    | Volume (v) -> &v.volume
-    | Smooth (s) -> &s.distortionFactor
+    | HardLimit (l) -> l
+    | Volume (v) -> v
+    | Smooth (s) -> s

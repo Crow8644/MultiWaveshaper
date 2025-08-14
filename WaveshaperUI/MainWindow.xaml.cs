@@ -25,9 +25,9 @@ namespace WaveshaperUI
         {
             // Run tests on functions in Functionality here
             Playback.newFile(1);
-            EffectOperations.createEffect(Effects.EffectType.SmoothDistortion);
-            //Playback.play();
-            Recording.saveCurrentFile();
+            //EffectOperations.createEffect(Effects.EffectType.SmoothDistortion);
+            Playback.play();
+            //Recording.saveCurrentFile();
         }
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

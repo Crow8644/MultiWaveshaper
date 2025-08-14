@@ -1,4 +1,7 @@
-﻿using System;
+﻿using OxyPlot;
+using OxyPlot.Series;
+using OxyPlot.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -21,43 +24,26 @@ namespace WaveshaperUI
     /// </summary>
     public partial class VolumePanel : EffectPanel
     {
-        public VolumePanel()
+        private Effects.Volume_Effect? volume_effect;
+        public VolumePanel(): base(Effects.EffectType.Volume)
         {
+            // Both this and the inherited union version (effect) are used for different things
+            volume_effect = (Effects.Volume_Effect?)EffectOperations.unpackEffect(effect);
+
+            base.DisplayModel.Title = "Volume Effect";
             InitializeComponent();
         }
-    }
 
-    public class SliderPercentConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        //public Binding SeriesBinding { get; private set; }
+
+        private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (value is double)
+            if (volume_effect != null)
             {
-                double x = (double)value;
-                x /= 10;
-
-                return x.ToString("N2");    // N2 indicates that we want two decimal places
+                volume_effect.volume = (float)(e.NewValue / 10.0);
             }
-            return "0";
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is string s) // Using pattern matching to convert value to string s
-            {
-                try
-                {
-                    return double.Parse(s) * 10.0;
-                }
-                catch
-                {
-                    return 0.0;
-                }
-            }
-            else
-            {
-                return 0.0;
-            }
+            updateModel();
+            MyPlotView.Model.InvalidatePlot(true);
         }
     }
 }
