@@ -94,7 +94,7 @@ let makeDefault (effectType: EffectType): EffectUnion =
         | EffectType.Volume -> 
             Volume({volume = 0.5f; smoothed_volume = 0.5f})
         | EffectType.HardDistortion -> 
-            HardLimit({upperLimit = 0.8f; upperLimitSmoothed = 0.8f; lowerLimit = 0.8f; lowerLimitSmoothed = 0.8f; makeupGain = false})
+            HardLimit({upperLimit = 0.8f; upperLimitSmoothed = 0.8f; lowerLimit = -0.8f; lowerLimitSmoothed = -0.8f; makeupGain = false})
         | EffectType.SmoothDistortion ->
             Smooth({distortionFactor = 2.0f; smoothFactor = 2.0f})
         // TODO: Add further effect types

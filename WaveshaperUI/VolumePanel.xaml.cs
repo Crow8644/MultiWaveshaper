@@ -24,17 +24,19 @@ namespace WaveshaperUI
     /// </summary>
     public partial class VolumePanel : EffectPanel
     {
+        // This variable is used for direct control of effect parameters,
+        // Whereas the union type (effects) is used for calls to the F# code that happen for all panel types
         private Effects.Volume_Effect? volume_effect;
         public VolumePanel(): base(Effects.EffectType.Volume)
         {
-            // Both this and the inherited union version (effect) are used for different things
+            // This is an unchecked cast, however, this function just initialized effects, so we know what type it is
             volume_effect = (Effects.Volume_Effect?)EffectOperations.unpackEffect(effect);
 
-            base.DisplayModel.Title = "Volume Effect";
+            base.DisplayModel.Title = "Volume";
             InitializeComponent();
+            if (volume_effect != null) VolumeSlider.Value = volume_effect.volume * 10.0f;
         }
 
-        //public Binding SeriesBinding { get; private set; }
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
