@@ -1,0 +1,20 @@
+﻿<local:EffectPanel x:Class="WaveshaperUI.TanhPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WaveshaperUI"
+             xmlns:oxy="http://oxyplot.org/wpf" 
+             xmlns:oxy1="clr-namespace:OxyPlot.Axes;assembly=OxyPlot"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <local:EffectPanel.Resources>
+        <local:SliderExponentialConverter x:Key="SliderExponentialConverter" />
+    </local:EffectPanel.Resources>
+    <Grid>
+        <oxy:PlotView Name="MyPlotView" Model="{Binding DisplayModel}" Height="300" Width="300" HorizontalAlignment="Left" Margin="25,25"></oxy:PlotView>
+        <Slider Name="FactorSlider" Width="320" VerticalAlignment="Top" Height="50" HorizontalAlignment="Right" Margin="25,25" ValueChanged="FactorSlider_ValueChanged"></Slider>
+        <TextBox Name="FactorDisplay" Height="25" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,53,30,0" Text="{Binding Path=Value, ElementName=FactorSlider, UpdateSourceTrigger=LostFocus, Converter={StaticResource SliderExponentialConverter}}"></TextBox>
+        <Label HorizontalAlignment="Right" Content="Distortion Factor" Foreground="White" VerticalAlignment="Top" Margin="0,50,80,0"></Label>
+    </Grid>
+</local:EffectPanel>

@@ -1,4 +1,7 @@
-﻿module Streams
+﻿(* Handles the generation on management of 
+*)
+
+module Streams
 
 open NAudio
 open NAudio.Wave
@@ -34,6 +37,7 @@ let generateEffectProvider (oversampling: int) (source: ISampleProvider): option
     else
         None
 
+// Create an EffectSampleProvider with the full list of effects from an older one, to keep continuity
 let regenerateEffectProvider (lastProvider: EffectSampleProvider) (oversampling: int) (source: ISampleProvider): option<EffectSampleProvider> =
     match generateEffectProvider oversampling source with
     | Some(newProvider) -> 
@@ -47,6 +51,7 @@ let tryRegenerateEffectProvider (maybeLastProvider: option<EffectSampleProvider>
     | Some(provider) -> regenerateEffectProvider provider oversampling source
     | None -> generateEffectProvider oversampling source
 
+// Prvoides the last step in our audio pipeline, which may be either downsampling or nothing
 let generateFinalOutput (oversampling: int) (source: ISampleProvider): option<ISampleProvider> =
     if oversampling = 1 then
         Some(source)

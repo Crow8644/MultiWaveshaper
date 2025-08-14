@@ -1,4 +1,11 @@
-﻿module Files
+﻿(* This module contains functions that do the interfacing with the file system
+   This includes, openning, parsing, and saving audio files
+   As well as (TODO) saving effect list data
+
+   Created by: Caleb Ausema (2025)
+*)
+
+module Files
 open Functionality
 open System
 open System.IO
@@ -14,9 +21,12 @@ let mutable default_path: string = if Directory.Exists userFolder then userFolde
 
 let seperateParentPath = Utils.regexSeperate "^(.*\\\)([^\\\]*)(\.[^\\\]*)$" default_path
 
-// wav, mp3, aiff, and wma are the four currently supported extentions
+// These are the four currently supported file types
 let isValidAudioFile = Utils.matchesExtention [|".wav"; ".mp3"; ".aiff"; "wma"|]
 
+let MAX_RECORDING_SECONDS: int64 = 600L
+
+// Parses the path string and updates the default path for future reference
 let setupAudioFile(file: string) = 
     if File.Exists file
     then
@@ -55,7 +65,7 @@ let rec writeAllBuffers (writer: WaveFileWriter) (inProvider: IWaveProvider) =
     let buffer: byte array = Array.zeroCreate inProvider.WaveFormat.AverageBytesPerSecond
 
     let bytesRead = inProvider.Read(buffer, 0, Array.length buffer)
-    if not (bytesRead = 0) && writer.Position < (int64 inProvider.WaveFormat.AverageBytesPerSecond * 600L) then
+    if not (bytesRead = 0) && writer.Position < (int64 inProvider.WaveFormat.AverageBytesPerSecond * MAX_RECORDING_SECONDS) then
         writer.Write(buffer, 0, bytesRead)
         writeAllBuffers writer inProvider   // Recursive call
     
@@ -70,17 +80,18 @@ let saveToUserSelectedStream (inStream: ISampleProvider) =
     // Set dialog properties
     dialog.InitialDirectory <- default_path
     dialog.Filter <- "WAV Files|*.wav"
-    dialog.Title <- "Chose where to save the processed file"
+    dialog.Title <- "Save a processed file"
 
+    // As I understand it, empty file name will create problems in Window's system
     if dialog.ShowDialog().Value && not (dialog.FileName = "") then
-        let fs: FileStream = dialog.OpenFile() :?> FileStream
+        let fs: FileStream = dialog.OpenFile() :?> FileStream // :?> is the downcasting operator
         
         let writer: WaveFileWriter = new WaveFileWriter(fs, inStream.WaveFormat) // This object writes out a wave file
 
-        // Expects the stream to return 0 at the end, but there is also a 10 minute recording limit
+        // Expects the stream to return 0 at the end, or it will reach the 10 minute recording limit
         writeAllBuffers writer (inStream.ToWaveProvider())
         fs.Flush()
-        writer.Dispose() // This ensures the file header is correct, making a valid WAV file
+        writer.Dispose() // Disposing ensures the file header constitutes a valid WAV file
 
         Some(dialog.FileName)
     else

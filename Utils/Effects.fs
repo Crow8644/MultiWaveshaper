@@ -1,4 +1,11 @@
-﻿module Effects
+﻿(* This module contains a bunch of static typing information for effects
+   This includes the typing information and base functions for the per sample proccessing of each effect
+   There are also functions to acccess this information
+  
+   Created by: Caleb Auseama (2025)
+*)
+
+module Effects
 
 open NAudio.Wave
 open NAudio.Wave.SampleProviders
@@ -10,8 +17,6 @@ type EffectType =
     | SmoothDistortion = 2
     | Compression = 3
     | Custom = 4
-
-let DELTA: float32 = 0.0001f // The per sample rate of change for effect parameters
 
 // Individual effect types
 type Volume2(volume) =
@@ -96,5 +101,5 @@ let makeDefault (effectType: EffectType): EffectUnion =
         | EffectType.HardDistortion -> 
             HardLimit({upperLimit = 0.8f; upperLimitSmoothed = 0.8f; lowerLimit = -0.8f; lowerLimitSmoothed = -0.8f; makeupGain = false})
         | EffectType.SmoothDistortion ->
-            Smooth({distortionFactor = 2.0f; smoothFactor = 2.0f})
+            Smooth({distortionFactor = 1.0f; smoothFactor = 1.0f})
         // TODO: Add further effect types

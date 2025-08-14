@@ -1,4 +1,11 @@
-﻿module EffectSampleProvider
+﻿(* This is an object that impliments NAudio's ISampleProvider interface
+   It is to be used as part of an audio pipeline and can hold a list of simple float32->float32 functions as effects
+   This is a very OO file and the reason it's in F# is that I like the elegance of the higher order functions
+
+   Created by: Caleb Ausema
+*)
+
+module EffectSampleProvider
 
 open NAudio.Wave
 open System
@@ -32,7 +39,7 @@ type EffectSampleProvider(src: ISampleProvider) =
             lock listLock (fun _ -> 
             Array.map
                 (fun (i: int) -> buffer[i] <- (effects |> List.fold (fun acc f -> f acc) buffer[i]))
-                [|offset..(offset + samplesRead - 1)|]              // Runs through all necessary indecies
+                [|offset..(offset + samplesRead - 1)|]              // List of every necessary buffer index
                 |> ignore
             )
 

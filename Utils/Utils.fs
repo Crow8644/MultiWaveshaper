@@ -3,10 +3,15 @@
 open System.Text.RegularExpressions
 open System.IO
 
+(* This module contains utility functions 
+   These are often partially applied or used generically elsewhere in the code elsewhere in the code
 
+   Created by: Caleb Ausema (2025)
+*)
 module Utils =
     let DELTA: float32 = 0.0001f // The per sample rate of change for effect parameters
 
+    // Generates an array based on the groups from a regex match
     let regexSeperate (regex: string) (default_ret: string) (toParse: string) =
         let m = Regex(regex).Match toParse       // Regex matches three groups: the parent folder, the file name, and the file extention
         if m.Success
@@ -18,6 +23,7 @@ module Utils =
         let ext: string = Path.GetExtension(path)
         extentions |> Array.map(fun s -> (s = ext)) |> Array.reduce(||)
 
+    // Converts a timespan into a string to be used for timer displays to the user
     let standardTimeDisplay (span: System.TimeSpan): string =
         if span.Hours = 0 then
              (string span.Minutes) + ":" + (sprintf "%02d" span.Seconds)
