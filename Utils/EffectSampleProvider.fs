@@ -11,6 +11,10 @@ open NAudio.Wave
 open System
 open System.Threading
 
+/// <summary>
+/// EffectSampleProvider is an implimentation of NAudio's ISampleProvider
+/// It takes a source stream on initialization and runs any float32 based effects on every incoming sample from that source
+/// </summary>
 type EffectSampleProvider(src: ISampleProvider) =
     let source: ISampleProvider = src
 
@@ -25,7 +29,7 @@ type EffectSampleProvider(src: ISampleProvider) =
 
     member this.getEffects = effects
 
-    // Applies a funtion to effects and resaves it, protecting the mutable list
+    // Applies a funtion to effects and resaves it, while protecting it from multithreading issues
     member this.doListProccess (proccess: ((float32->float32) list -> (float32->float32) list)) =
         lock listLock (fun _ ->
             effects <- proccess effects

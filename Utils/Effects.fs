@@ -52,6 +52,8 @@ type EffectUnion =
     | HardLimit of Hard_Distortion_Effect
     | Smooth of Smooth_Distortion_Effect
 
+// --PROCCESSING FUNCTIONS-- //
+
 let volume_function (effect: Volume_Effect) (sample: float32): float32 =
     // Adjusts the volume slightly every frame
     effect.smoothed_volume <- smoothChange effect.smoothed_volume effect.volume
@@ -86,12 +88,51 @@ let smooth_distortion_function (effect: Smooth_Distortion_Effect) (sample: float
     |> tanh
     |> (*) scaler
 
+// --GRAPHICS FUNCTIONS-- //
+// Same as the processing functions but without smoothing and taking float instead of float32
+// It would be cleaner to have both types of effect functions interface to a set of base functions
+// But at least for now, this solution was faster
+
+let volume_graphics (effect: Volume_Effect) (sample: float): float =
+    float (middleVal (float32 sample * effect.volume) -1.0f 1.0f)
+
+let hard_distortion_graphics (effect: Hard_Distortion_Effect) (sample: float): float =
+    let multiplier = 
+        if effect.makeupGain then
+            // Calculate make-up gain based on the lesser of the two limits so we don't cause clipping
+            1.0 / min (float effect.upperLimit) (float effect.lowerLimit * -1.0)
+        else 1.0
+
+    if sample > float effect.upperLimit then
+        float effect.upperLimit * multiplier
+    elif sample < float effect.lowerLimit then
+        float effect.lowerLimit * multiplier
+    else
+        sample * multiplier
+
+let smooth_distortion_graphics (effect: Smooth_Distortion_Effect) (sample: float): float =
+    // Using this as a multiplier ensures the presence of points (1, 1) and (-1, -1), preventing loss
+    let scaler = 1.0 / (tanh (float effect.distortionFactor))
+
+    sample
+    |> (*) (float effect.distortionFactor)
+    |> tanh
+    |> (*) scaler
+
+// --HELPER FUNCTIONS-- //
+
 // A method to access a partially applied version of a given effect function
 let getEffectFunction (effect: EffectUnion): float32->float32 =
     match effect with
     | HardLimit (l) -> hard_distortion_function l
     | Volume (v) -> volume_function v
     | Smooth (s) -> smooth_distortion_function s
+
+let getGraphicsFunction (effect: EffectUnion): float->float =
+    match effect with
+    | HardLimit (l) -> hard_distortion_graphics l
+    | Volume (v) -> volume_graphics v
+    | Smooth (s) -> smooth_distortion_graphics s
 
 // This function is mainly used to store the default values for each type of effect in one place
 let makeDefault (effectType: EffectType): EffectUnion =

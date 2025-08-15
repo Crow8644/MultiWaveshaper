@@ -26,7 +26,7 @@ namespace WaveshaperUI
     {
         // This variable is used for direct control of effect parameters,
         // Whereas the union type (effects) is used for calls to the F# code that happen for all panel types
-        private Effects.Volume_Effect? volume_effect;
+        private readonly Effects.Volume_Effect? volume_effect;
         public VolumePanel(): base(Effects.EffectType.Volume)
         {
             // This is an unchecked cast, however, this function just initialized effects, so we know what type it is

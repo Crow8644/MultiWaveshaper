@@ -12,6 +12,6 @@
     <Grid>
         <Button RenderTransformOrigin="0.482,0.514" Height="80" Width="180" Content="Run Tests" FontSize="30" Click="Button_Click"/>
         <Slider Name="VolumeSlider" ValueChanged="VolumeSlider_ValueChanged" Value="10" Height="10" VerticalAlignment="Top"></Slider>
-        <local:TanhPanel></local:TanhPanel>
+        <local:HardDistortionPanel></local:HardDistortionPanel>
     </Grid>
 </Window>

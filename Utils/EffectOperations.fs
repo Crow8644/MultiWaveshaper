@@ -1,4 +1,10 @@
-﻿module EffectOperations
+﻿(* This module holds a mutable list of effects and the operations that might change it
+   This is a very OO aproach but easier than the functional approach for an event driven application like this
+
+   Created by: Caleb Ausema (2025)
+*)
+
+module EffectOperations
 
 open Effects
 

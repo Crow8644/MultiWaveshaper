@@ -1,4 +1,10 @@
-﻿module Playback
+﻿(* This module contains all the functions that interface directly with the playback of audio
+   This includes playing/pausing/rewinding/initializing
+
+   Created by: Caleb Ausema (2025)
+*)
+
+module Playback
 open NAudio.Wave
 open Functionality
 open System.Threading
@@ -18,18 +24,24 @@ outputDevice.PlaybackStopped.Add(fun args ->
     Streams.getRepositionFunction 0
 )
 
+// Initializes from a file
+// Might break if audio is already playing
 let initializeFromFileUnchecked(oversampling: int) =
     Streams.newFileProvider oversampling
     |> Option.map outputDevice.Init
     |> Option.map EffectOperations.flush_effects // Re-creates all effect functions. Will only run if the previous function returned Some(), which means it was successful
     |> ignore
 
+// Begins playing audio from the device microphone
+// Might break if audio is already playing
 let initializeAudioInUnchecked(oversampling: int) =
     Streams.newLiveListen oversampling
     |> Option.map outputDevice.Init
     |> Option.map EffectOperations.flush_effects // Re-creates all effect functions. Will only run if the previous function returned Some(), which means it was successful
     |> ignore
 
+// Changes to play audio with a new oversampling value
+// Might break if audio is already playing
 let oversamplingChangeUnchecked(oversampling: int) =
     Streams.oversamplingChange(oversampling)
     |> Option.map outputDevice.Init

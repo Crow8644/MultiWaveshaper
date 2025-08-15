@@ -1,4 +1,4 @@
-﻿(* Handles the generation on management of 
+﻿(* Handles the generation and management of 
 *)
 
 module Streams
@@ -15,6 +15,7 @@ let generateFileProvider (filename: string): option<AudioFileReader> =
     else
         None
 
+// Creates and sets up a new WaveIn for listening to the device's microphone
 let generateLiveListen (): option<WaveInEvent> =
     try
         let w = new WaveInEvent()
@@ -25,6 +26,7 @@ let generateLiveListen (): option<WaveInEvent> =
     with 
         | ex -> None
 
+// The second step in an audio pipeline, generating the EffectProvider and upsampling if necessary
 let generateEffectProvider (oversampling: int) (source: ISampleProvider): option<EffectSampleProvider> =
     if oversampling = 1 then
         Some(new EffectSampleProvider(source))

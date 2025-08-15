@@ -1,6 +1,7 @@
-﻿// Functions in this module handle live listening
-// And recording to a file
-
+﻿(* Functions in this module handle live listening and recording to a file
+   
+   Created by: Caleb Ausema (2025)
+*)
 module Recording
 
 open NAudio.Wave
@@ -19,11 +20,11 @@ let startRecording(oversampling: int) =
     | None -> false
 
 // Saves the current final output stream to a user-selected file
-let saveAudioFile (fileReader: option<ISampleProvider>) =
+let saveAudioFile (reader: option<ISampleProvider>) =
     // Test if we are currently working with a file. This will create serious issues if we are not
     if Playback.pause() then                // Make sure pausing was a success
         0L |> Streams.getRepositionFunction // Reset the file to the beginning
-        fileReader |> Option.bind Files.saveToUserSelectedStream |> ignore
+        reader |> Option.bind Files.saveToUserSelectedStream |> ignore
         true
     else false
 

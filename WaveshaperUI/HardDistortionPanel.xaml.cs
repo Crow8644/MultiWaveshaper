@@ -22,7 +22,7 @@ namespace WaveshaperUI
     /// </summary>
     public partial class HardDistortionPanel : EffectPanel
     {
-        private Effects.Hard_Distortion_Effect? distortion_effect;
+        private readonly Effects.Hard_Distortion_Effect? distortion_effect;
         private bool symmetrical = true;
 
         public HardDistortionPanel() : base(Effects.EffectType.HardDistortion)

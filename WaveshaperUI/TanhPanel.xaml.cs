@@ -24,7 +24,7 @@ namespace WaveshaperUI
     /// </summary>
     public partial class TanhPanel : EffectPanel
     {
-        private Effects.Smooth_Distortion_Effect? smooth_effect;
+        private readonly Effects.Smooth_Distortion_Effect? smooth_effect;
 
         public TanhPanel() : base(Effects.EffectType.SmoothDistortion)
         {

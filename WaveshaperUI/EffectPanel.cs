@@ -51,11 +51,11 @@ namespace WaveshaperUI
             this.DisplayModel.Series.Add(series);
         }
 
-        // Converts the current effect function into one that takes doubles so that it can be used for the display model
+        // Converts the current effect function into a C# function that can be passed to the necessary objects
         protected double ProperFunction(double d)
         {
-            Microsoft.FSharp.Core.FSharpFunc<float, float> fSharpFunc = Effects.getEffectFunction(effect);
-            return (double)fSharpFunc.Invoke((float)d);
+            Microsoft.FSharp.Core.FSharpFunc<double, double> fSharpFunc = Effects.getGraphicsFunction(effect);
+            return fSharpFunc.Invoke(d);
         }
 
         protected void updateModel()

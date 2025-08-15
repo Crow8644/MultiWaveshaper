@@ -71,6 +71,7 @@ let rec writeAllBuffers (writer: WaveFileWriter) (inProvider: IWaveProvider) =
     
     // Break case is when no more bytes are read or the 10 minute limit is reached
 
+// This function takes any ISampleProvider, prompts the user for a file, and saves that stream as wave file
 let saveToUserSelectedStream (inStream: ISampleProvider) =
     let dialog: SaveFileDialog = new SaveFileDialog()
 
