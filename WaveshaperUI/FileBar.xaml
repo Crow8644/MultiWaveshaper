@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="WaveshaperUI.FileBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WaveshaperUI"
+             mc:Ignorable="d" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="5,5"/>
+        </Style>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel Background="#545454" Height="60" Width="500" LastChildFill="True">
+            <Button Name="Play_Pause" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right"></Button>
+            <Button Name="Stop" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right"></Button>
+
+            <DockPanel LastChildFill="False" DockPanel.Dock="Left">
+                <Slider DockPanel.Dock="Top" Margin="5,5"></Slider>
+                <Label Name="Start_Time" Content="--:-" DockPanel.Dock="Left"></Label>
+                <Label Name="End_Time" Content="--:-" DockPanel.Dock="Right"></Label>
+                <Label Name="File_Label" Content="File Unselected" DockPanel.Dock="Bottom" HorizontalContentAlignment="Center"></Label>
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</UserControl>

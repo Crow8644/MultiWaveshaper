@@ -132,3 +132,5 @@ let getRepositionFunction =
     match currentFileReader with
     | Some(ws) -> (fun x -> ws.Position <- x)
     | None -> (fun _ -> ())                     // Return a useless function when doing live processing
+
+// Useful article: https://fsharpforfunandprofit.com/posts/computation-expressions-bind//

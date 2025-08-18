@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WaveshaperUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Closed="Window_Closed">
+        Title="MainWindow" Height="550" Width="800" Closed="Window_Closed">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="CommandAdd_Executed" CanExecute="CommandAdd_CanExecute"/>
     </Window.CommandBindings>
     <Grid>
         <Button RenderTransformOrigin="0.482,0.514" Height="80" Width="180" Content="Run Tests" FontSize="30" Click="Button_Click"/>
-        <Slider Name="VolumeSlider" ValueChanged="VolumeSlider_ValueChanged" Value="10" Height="10" VerticalAlignment="Top"></Slider>
-        <local:HardDistortionPanel></local:HardDistortionPanel>
+        <local:Selector></local:Selector>
+        <local:FileBar VerticalAlignment="Top" HorizontalAlignment="Right"></local:FileBar>
     </Grid>
 </Window>

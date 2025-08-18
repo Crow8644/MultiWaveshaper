@@ -11,7 +11,7 @@
     <local:EffectPanel.Resources>
         <local:SliderPercentConverter x:Key="SliderPercentConverter" />
     </local:EffectPanel.Resources>
-    <Grid>
+    <Grid Height="350" Width="700">
         <oxy:PlotView Name="MyPlotView" Model="{Binding DisplayModel}" Height="300" Width="300" HorizontalAlignment="Left" Margin="25,25"></oxy:PlotView>
         <Grid Height="120" VerticalAlignment="Top" HorizontalAlignment="Right">
             <Slider Name="LimitSlider" Width="320" VerticalAlignment="Top" Height="50" HorizontalAlignment="Right" Margin="25,25" ValueChanged="LimitSlider_ValueChanged"></Slider>

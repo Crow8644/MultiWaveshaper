@@ -7,11 +7,11 @@
              xmlns:oxy="http://oxyplot.org/wpf" 
              xmlns:oxy1="clr-namespace:OxyPlot.Axes;assembly=OxyPlot"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="350" d:DesignWidth="700">
     <local:EffectPanel.Resources>
         <local:SliderExponentialConverter x:Key="SliderExponentialConverter" />
     </local:EffectPanel.Resources>
-    <Grid>
+    <Grid Height="350" Width="700">
         <oxy:PlotView Name="MyPlotView" Model="{Binding DisplayModel}" Height="300" Width="300" HorizontalAlignment="Left" Margin="25,25"></oxy:PlotView>
         <Slider Name="FactorSlider" Width="320" VerticalAlignment="Top" Height="50" HorizontalAlignment="Right" Margin="25,25" ValueChanged="FactorSlider_ValueChanged"></Slider>
         <TextBox Name="FactorDisplay" Height="25" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,53,30,0" Text="{Binding Path=Value, ElementName=FactorSlider, UpdateSourceTrigger=LostFocus, Converter={StaticResource SliderExponentialConverter}}"></TextBox>

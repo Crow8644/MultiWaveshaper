@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GraphicsWorkForWaveshaper
+namespace WaveshaperUI
 {
     /// <summary>
     /// Interaction logic for Selector.xaml
@@ -24,6 +24,30 @@ namespace GraphicsWorkForWaveshaper
         {
             InitializeComponent();
             //Tabs.Items.Add(new TabItem { Header = "Added" });
+        }
+
+        public void AddTabItem()
+        {
+            TabItem item = new TabItem();
+            item.Content = new VolumePanel();
+            Tabs.Items.Insert(Tabs.Items.Count - 1, item);
+            Tabs.SelectedIndex = Tabs.Items.Count - 2;
+        }
+
+        private void Volume_Add_Click(object sender, RoutedEventArgs e)
+        {
+            TabItem item = new TabItem();
+            item.Content = new VolumePanel();
+            Tabs.Items.Insert(Tabs.Items.Count - 1, item);
+            Tabs.SelectedIndex = Tabs.Items.Count - 2;
+        }
+
+        private void Smooth_Add_Click(object sender, RoutedEventArgs e)
+        {
+            TabItem item = new TabItem();
+            item.Content = new TanhPanel();
+            Tabs.Items.Insert(Tabs.Items.Count - 1, item);
+            Tabs.SelectedIndex = Tabs.Items.Count - 2;
         }
     }
 }
