@@ -8,6 +8,7 @@ open NAudio.Wave
 open EffectSampleProvider
 open System.IO
 open System
+open Functionality
 
 let generateFileProvider (filename: string): option<AudioFileReader> =
     if File.Exists filename then
@@ -128,9 +129,65 @@ let oversamplingChange (oversampling: int) =
             currentFinalOutput      // Return and save
         | None -> None
 
-let getRepositionFunction =
+// We're unpacking options a lot in these functions because they are for interfacing with the UI, writen in C#
+// and I've decided not to expose any option<>s to the C# code
+
+let getRepositionFunction() =
     match currentFileReader with
-    | Some(ws) -> (fun x -> ws.Position <- x)
+    | Some(ws) -> (fun x -> 
+        // This calculation finds the exact byte position that needs to be set, ensuring that the result be an integer multiple of BlockAlign
+        ws.Position <- 
+        ws.Length / (int64)ws.BlockAlign |> float 
+        |> (*) x |> int64 
+        |> (*) (int64 ws.BlockAlign))
     | None -> (fun _ -> ())                     // Return a useless function when doing live processing
 
+let getFileProgress(resulution: int): float =
+    //if Monitor.TryEnter switchLock            // This function is called by the GUI thread, so we want no blocking here, just return 0 if unable to attain lock
+    match currentFileReader with
+    | Some(ws) ->
+        let portion: float = float ws.Position / float ws.Length            // Calculates current progress as a portion
+        (portion * float resulution)                                        // Multiplies to fit specified range
+    | None ->
+        0.0
+
+let getFileName(): string =
+    match currentFileReader with
+    | None ->
+        "File Unselected"
+    | Some(ws) -> 
+        // Returns the name of the file without the extention
+        (Files.seperateParentPath ws.FileName)[2]
+
+let getCurrentTime(): Option<System.TimeSpan> =
+    match currentFileReader with
+    | None ->
+        None
+    | Some(ws) ->
+        Some ws.CurrentTime
+
+let getTotalTime(): Option<System.TimeSpan> =
+    match currentFileReader with
+    | None ->
+        None
+    | Some(ws) ->
+        Some ws.TotalTime
+
+let getTimeDisplay(): string =
+    match getCurrentTime() with
+    | Some(t) -> Utils.standardTimeDisplay t
+    | None -> "-:--"
+
+let getEndTimeDisplay(): string =
+    match getTotalTime() with
+    | Some(t) -> Utils.standardTimeDisplay t
+    | None -> "-:--"
+
+let isFileOver(): bool = 
+    match currentFileReader with
+    | None -> false
+    | Some(ws) -> (ws.Length <= ws.Position)
+
+
 // Useful article: https://fsharpforfunandprofit.com/posts/computation-expressions-bind//
+// The nature of the UI and my experience doesn't make utilizing it easy, but still

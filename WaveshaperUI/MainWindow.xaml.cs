@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Microsoft.FSharp.Core;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +21,7 @@ namespace WaveshaperUI
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -47,6 +50,17 @@ namespace WaveshaperUI
 
         private void CommandAdd_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
+
+        }
+
+        private void Select_Click(object sender, RoutedEventArgs e)
+        {
+            // I cannot do something like this directly, because there's no easy way to convert a method to a function for F#
+            //Playback.newFileAndContinue(1, (FSharpFunc<Unit, a>)File_Bar.Try_Set_Data);
+
+            // Thus, I created this signal setup, which almost makes it work like a background worker
+            Action<string> test = File_Bar.Try_Set_Data;
+            Playback.newFileAndContinue(1, File_Bar.Try_Set_Data);
 
         }
     }

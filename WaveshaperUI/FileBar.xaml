@@ -14,12 +14,12 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <DockPanel Background="#545454" Height="60" Width="500" LastChildFill="True">
-            <Button Name="Play_Pause" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right"></Button>
-            <Button Name="Stop" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right"></Button>
+        <DockPanel Background="#686868" Height="60" Width="500" LastChildFill="True">
+            <Button Name="Play_Pause" Content="play" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right" Click="Play_Pause_Click"></Button>
+            <Button Name="Stop" Content="stop" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right" Click="Stop_Click"></Button>
 
             <DockPanel LastChildFill="False" DockPanel.Dock="Left">
-                <Slider DockPanel.Dock="Top" Margin="5,5"></Slider>
+                <Slider Name="Progress" DockPanel.Dock="Top" Margin="5,5" Thumb.DragCompleted="Progress_ValueChanged"></Slider>
                 <Label Name="Start_Time" Content="--:-" DockPanel.Dock="Left"></Label>
                 <Label Name="End_Time" Content="--:-" DockPanel.Dock="Right"></Label>
                 <Label Name="File_Label" Content="File Unselected" DockPanel.Dock="Bottom" HorizontalContentAlignment="Center"></Label>

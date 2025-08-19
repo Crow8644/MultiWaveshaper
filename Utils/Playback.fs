@@ -21,7 +21,7 @@ let stopSignal: ManualResetEvent = new ManualResetEvent(false)          // This 
 outputDevice.PlaybackStopped.Add(fun args -> 
     stopSignal.Set() |> ignore
     // Resets the file by invoking a function from module Streams, which will change as the file changes
-    Streams.getRepositionFunction 0
+    Streams.getRepositionFunction() 0
 )
 
 // Initializes from a file
@@ -105,20 +105,20 @@ let stopAndDo (nextAction: _->unit) (errorAction: _->unit) =
         errorAction()
 
 // Alternative version of stop and do for when the nextAction requires being run in the caller's thread (usually the UI thread)
-let stopAndDoSync (nextAction: _->unit) (errorAction: _->unit) =
+let stopAndDoSync (nextAction: _->'a) (errorAction: _->'a) =
     if outputDevice.PlaybackState = PlaybackState.Stopped then 
-        nextAction()
+        nextAction() |> ignore
     // stopSignal may have been set several times before this point, so we need to reset it
     elif stopSignal.Reset() then
         let bw = new BackgroundWorker()
         bw.DoWork.Add (fun _ -> stopSignal.WaitOne() |> ignore)
-        bw.RunWorkerCompleted.Add(fun _ -> nextAction())
+        bw.RunWorkerCompleted.Add(fun _ -> nextAction() |> ignore)
 
         bw.RunWorkerAsync()
 
         outputDevice.Stop()
     else
-        errorAction()
+        errorAction() |> ignore
 
 
 let newFile(oversampling: int) = stopAndDoSync (fun _ -> initializeFromFileUnchecked oversampling) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
@@ -126,6 +126,21 @@ let newFile(oversampling: int) = stopAndDoSync (fun _ -> initializeFromFileUnche
 let newAudioIn(oversampling: int) = stopAndDoSync (fun _ -> initializeAudioInUnchecked oversampling) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
 
 let oversamplingChanged(oversampling: int) = stopAndDoSync (fun _ -> oversamplingChangeUnchecked oversampling |> ignore) (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
+
+//let newFileAndContinue (oversampling: int) (continuation: unit->'a) = 
+//    stopAndDoSync 
+//        (fun _ -> 
+//            initializeFromFileUnchecked oversampling
+//            continuation) 
+//        (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
+
+// Allows for UI updates after a file playback is initialized
+let newFileAndContinue (oversampling: int) (continuation: System.Action<string>) = 
+    stopAndDoSync 
+        (fun _ -> 
+            initializeFromFileUnchecked oversampling
+            continuation.Invoke "0:00") 
+        (fun _ -> raise (PlaybackThreadingError("Signal could not be reset")))
 
 let closeObjects() =
     // Adds the continuation to the PlaybackStopped event, so they will only trigger after playback has stopped

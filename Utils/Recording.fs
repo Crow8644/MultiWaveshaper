@@ -22,8 +22,8 @@ let startRecording(oversampling: int) =
 // Saves the current final output stream to a user-selected file
 let saveAudioFile (reader: option<ISampleProvider>) =
     // Test if we are currently working with a file. This will create serious issues if we are not
-    if Playback.pause() then                // Make sure pausing was a success
-        0L |> Streams.getRepositionFunction // Reset the file to the beginning
+    if Playback.pause() then                    // Make sure pausing was a success
+        0.0 |> Streams.getRepositionFunction()   // Reset the file to the beginning
         reader |> Option.bind Files.saveToUserSelectedStream |> ignore
         true
     else false

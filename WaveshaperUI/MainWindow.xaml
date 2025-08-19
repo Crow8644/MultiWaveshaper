@@ -12,6 +12,7 @@
     <Grid>
         <Button RenderTransformOrigin="0.482,0.514" Height="80" Width="180" Content="Run Tests" FontSize="30" Click="Button_Click"/>
         <local:Selector></local:Selector>
-        <local:FileBar VerticalAlignment="Top" HorizontalAlignment="Right"></local:FileBar>
+        <local:FileBar x:Name="File_Bar" VerticalAlignment="Top" HorizontalAlignment="Right"></local:FileBar>
+        <Button Name="Select" Height="60" Content="Select File" Width="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,5" Click="Select_Click"></Button>
     </Grid>
 </Window>
