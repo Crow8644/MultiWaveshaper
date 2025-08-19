@@ -31,6 +31,7 @@ namespace WaveshaperUI
             smooth_effect = (Effects.Smooth_Distortion_Effect?)EffectOperations.unpackEffect(effect);
 
             base.DisplayModel.Title = "Hyperbolic Tangent Distortion";
+            base.DisplayModel.TitleFontSize = 15;   // Ensure the title can fit
             InitializeComponent();
             if (smooth_effect != null) FactorSlider.Value = SliderExponentialConverter.NumericConvertBack(smooth_effect.distortionFactor);
         }

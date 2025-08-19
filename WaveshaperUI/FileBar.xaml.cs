@@ -34,7 +34,7 @@ namespace WaveshaperUI
             if (!paused && !Progress.IsMouseCaptureWithin)
             {
                 Progress.Value = Streams.getFileProgress(10);
-                if (Streams.isFileOver())
+                if (Streams.isFileOver())   // Resets UI properties when the end of a file is reached
                 {
                     Play_Pause.Content = "play";
                     paused = true;
@@ -75,11 +75,13 @@ namespace WaveshaperUI
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            Playback.stop();
-            Play_Pause.Content = "play";
-            paused = true;
-            Progress.Value = 0; // Resets the slider
-            Start_Time.Content = "0:00";
+            if (Playback.stop())
+            {
+                Play_Pause.Content = "play";
+                paused = true;
+                Progress.Value = 0; // Resets the slider
+                Start_Time.Content = "0:00";
+            }
         }
 
         private void Progress_ValueChanged(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)

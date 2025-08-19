@@ -66,8 +66,8 @@ let hard_distortion_function (effect: Hard_Distortion_Effect) (sample: float32):
 
     let multiplier = 
         if effect.makeupGain then
-            // Calculate make-up gain based on the lesser of the two limits so we don't cause clipping
-            1.0f / min effect.upperLimitSmoothed (effect.lowerLimitSmoothed * -1.0f)
+            // Calculate make-up gain based on the higher of the two limits so we don't cause clipping
+            1.0f / max effect.upperLimitSmoothed (effect.lowerLimitSmoothed * -1.0f)
         else 1.0f
 
     if sample > effect.upperLimitSmoothed then
@@ -99,8 +99,8 @@ let volume_graphics (effect: Volume_Effect) (sample: float): float =
 let hard_distortion_graphics (effect: Hard_Distortion_Effect) (sample: float): float =
     let multiplier = 
         if effect.makeupGain then
-            // Calculate make-up gain based on the lesser of the two limits so we don't cause clipping
-            1.0 / min (float effect.upperLimit) (float effect.lowerLimit * -1.0)
+            // Calculate make-up gain based on the higher of the two limits so we don't cause clipping
+            1.0 / max (float effect.upperLimit) (float effect.lowerLimit * -1.0)
         else 1.0
 
     if sample > float effect.upperLimit then

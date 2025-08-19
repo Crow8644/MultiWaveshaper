@@ -7,14 +7,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="420" d:DesignWidth="700">
     <Grid Background="SlateGray" Height="420" Width="700">
-        <TabControl Name="Tabs" Background="Gray" TabStripPlacement="Bottom">
+        <TabControl Name="Tabs" Background="Gray" TabStripPlacement="Bottom" SelectionChanged="Tabs_SelectionChanged">
             <TabItem Name="Adding_Tab" Height="70">
                 <TabItem.Header>
                     <Label Name="add_effect_button" Content="Add Effect"></Label>
                 </TabItem.Header>
                 <Grid>
-                    <Button Name="Volume_Add" Height="60" Width="150" Content="New Volume Effect" FontSize="15" Click="Volume_Add_Click" Margin="272,105,272,177"/>
-                    <Button Name="Smooth_Add"  Height="60" Width="150" Content="New Smooth Distortion " FontSize="15" Click="Smooth_Add_Click" Margin="272,187,272,95"/>
+                    <Button Name="Volume_Add" Height="60" Width="150" Content="New Volume Effect" FontSize="15" Click="Volume_Add_Click" Margin="272,70,272,212"/>
+                    <Button Name="Smooth_Add"  Height="60" Width="150" Content="New Smooth Distortion " FontSize="15" Click="Smooth_Add_Click" Margin="272,150,272,132"/>
+                    <Button Name="Hard_Add"  Height="60" Width="150" Content="New Hard Clipping " FontSize="15" Click="Hard_Add_Click" Margin="272,230,272,52"/>
                 </Grid>
             </TabItem>
         </TabControl>

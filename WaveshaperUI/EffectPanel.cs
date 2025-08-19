@@ -39,16 +39,15 @@ namespace WaveshaperUI
             Axis side = new LinearAxis
             {
                 Position = AxisPosition.Left,       // Axis position
-                Minimum = -1,                       // Same range as the effect functions
-                Maximum = 1,
+                Minimum = -1.01,                    // Slightly larger range to catch lines that hang near the top
+                Maximum = 1.01,
                 ExtraGridlines = [0d],              // Adds a center line
             };
             this.DisplayModel.Axes.Add(lower);
             this.DisplayModel.Axes.Add(side);
 
             // Set series to graph
-            FunctionSeries series = new FunctionSeries(ProperFunction, -1.0f, 1.0f, 0.1f);
-            this.DisplayModel.Series.Add(series);
+            this.DisplayModel.Series.Add(MakeDisplaySeries());
         }
 
         // Converts the current effect function into a C# function that can be passed to the necessary objects
@@ -61,10 +60,17 @@ namespace WaveshaperUI
         protected void updateModel()
         {
             this.DisplayModel.Series.Clear();
-            this.DisplayModel.Series.Add(new FunctionSeries(ProperFunction, -1.0f, 1.0f, 0.1f));
+            this.DisplayModel.Series.Add(MakeDisplaySeries());
         }
 
         public PlotModel DisplayModel { get; protected set; }
+
+        // Makes copies of the display series, since a single series be re-bound to a model
+        public FunctionSeries MakeDisplaySeries()
+        {
+            return new FunctionSeries(ProperFunction, -1.0f, 1.0f, 0.1f);
+        }
+
     }
 
     public class SliderPercentConverter : IValueConverter
