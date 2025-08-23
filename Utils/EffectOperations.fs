@@ -7,6 +7,7 @@
 module EffectOperations
 
 open Effects
+open Functionality
 
 let mutable effects: EffectUnion list = List.empty<Effects.EffectUnion>
 
@@ -35,24 +36,38 @@ let createEffect(effectType: Effects.EffectType) =
     | None -> ()
     newEffect
 
-// A version of the function that creates a default if 
-
 // Remove an effect from any position, returns true on success and false on failure
-let removeEffect(position: int): bool =
+let removeIndex(index: int): bool =
     try
-        effects <- List.removeAt position effects
+        effects <- List.removeAt index effects
 
         let ef = Streams.currentEffectProvider
         match ef with
-        | Some(provider) -> provider.doListProccess(List.removeAt position)
+        | Some(provider) -> provider.doListProccess(List.removeAt index)
         | None -> ()
         true
     with
         | :? System.IndexOutOfRangeException -> false
 
+// Removes a specific effect rather than at an index
+let removeEffect(effect: EffectUnion) =
+    let indexOpt = List.tryFindIndex (fun x -> x = effect) effects
+    match indexOpt with
+    | Some(index) -> removeIndex(index)
+    | None -> false
+
 // Move an effect
 let moveEffect(sourcePos: int, destinationPos: int) =
-    ()
+    try
+        effects <- Utils.swap sourcePos destinationPos effects
+
+        let ef = Streams.currentEffectProvider
+        match ef with
+        | Some(provider) -> provider.doListProccess(Utils.swap sourcePos destinationPos)
+        | None -> ()
+        true
+    with
+        | :? System.IndexOutOfRangeException -> false
 
 //let getChangeBinding (effect: EffectUnion) (port: int) =
 //    match effect with

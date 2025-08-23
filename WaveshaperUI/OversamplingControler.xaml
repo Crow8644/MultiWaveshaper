@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="WaveshaperUI.OversamplingControler"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WaveshaperUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="60" d:DesignWidth="130">
+    <Grid Height="60" Width="130">
+        <Label Content="Oversampling Rate" Foreground="White"></Label>
+        <ComboBox Name="Selector" Height="30" VerticalAlignment="Bottom" Margin="5,5" SelectionChanged="Selector_SelectionChanged">
+            <ComboBoxItem IsSelected="True">1</ComboBoxItem>
+            <ComboBoxItem>2</ComboBoxItem>
+            <ComboBoxItem>3</ComboBoxItem>
+            <ComboBoxItem>4</ComboBoxItem>
+            <ComboBoxItem>6</ComboBoxItem>
+        </ComboBox>
+    </Grid>
+</UserControl>

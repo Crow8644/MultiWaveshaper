@@ -11,8 +11,10 @@
     </Window.CommandBindings>
     <Grid>
         <!--<Button RenderTransformOrigin="0.482,0.514" Height="80" Width="180" Content="Run Tests" FontSize="30" Click="Button_Click"/>-->
-        <local:Selector></local:Selector>
+        <local:Selector VerticalAlignment="Bottom"></local:Selector>
         <local:FileBar x:Name="File_Bar" VerticalAlignment="Top" HorizontalAlignment="Right"></local:FileBar>
         <Button Name="Select" Height="60" Content="Select File" Width="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,5" Click="Select_Click"></Button>
+        <local:OversamplingControler x:Name="OvspControler" Background="#595959" Width="130" Height="60" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="200,0,0,0"></local:OversamplingControler>
+        <Button x:Name="Save" Height="60" Content="Save File" Width="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="103,5,0,0" Click="Save_Click"/>
     </Grid>
 </Window>

@@ -23,6 +23,13 @@ module Utils =
         let ext: string = Path.GetExtension(path)
         extentions |> Array.map(fun s -> (s = ext)) |> Array.reduce(||)
 
+    // Swaps two positions in a list
+    let swap (source: int) (destination: int) (target: 'a list): 'a list =
+        let toMove: 'a = target[source]
+        let listWithout = List.removeAt source target
+
+        List.insertAt destination toMove listWithout
+
     // Converts a timespan into a string to be used for timer displays to the user
     let standardTimeDisplay (span: System.TimeSpan): string =
         if span.Hours = 0 then
@@ -31,6 +38,7 @@ module Utils =
              (string span.Hours) + ":" + (sprintf "%02d" span.Minutes) + ":" + (sprintf "%02d" span.Seconds)
 
     // Function to test if a value is in the middle of a min and max value
+    // In C# this is just float.Clamp, but I couldn't find access to that in F#
     let middleVal (value: float32) (min: float32) (max: float32) =
         if value < min then min
         elif value > max then max

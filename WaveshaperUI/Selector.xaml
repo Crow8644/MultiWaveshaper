@@ -8,6 +8,13 @@
              d:DesignHeight="420" d:DesignWidth="700">
     <Grid Background="SlateGray" Height="420" Width="700">
         <TabControl Name="Tabs" Background="Gray" TabStripPlacement="Bottom" SelectionChanged="Tabs_SelectionChanged">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="AllowDrop" Value="True"/>
+                    <EventSetter Event="PreviewMouseMove" Handler="TabItem_PreviewMouseMove"/>
+                    <EventSetter Event="Drop" Handler="TabItem_Drop"/>
+                </Style>
+            </TabControl.Resources>
             <TabItem Name="Adding_Tab" Height="70">
                 <TabItem.Header>
                     <Label Name="add_effect_button" Content="Add Effect"></Label>

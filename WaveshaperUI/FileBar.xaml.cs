@@ -21,14 +21,15 @@ namespace WaveshaperUI
     /// </summary>
     public partial class FileBar : UserControl
     {
-        private bool paused = true;
+        private bool paused = true; // Tracks if the display should coorspond to being paused or not
         public FileBar()
         {
             InitializeComponent();
             CompositionTarget.Rendering += Update_Slider;
         }
 
-        // Has the slider and time counter track the progress of a track
+        // Updates the slider and time counter track the progress of a track
+        // This method is to be called every frame
         private void Update_Slider(object? sender, EventArgs e)
         {
             if (!paused && !Progress.IsMouseCaptureWithin)
@@ -45,11 +46,23 @@ namespace WaveshaperUI
             }
         }
 
+        // Sets the name and display when a file is selected
+        // This method is passed as an action to the backend
         public void Try_Set_Data(string defaultStr)
         {
             File_Label.Content = Streams.getFileName();
             End_Time.Content = Streams.getEndTimeDisplay();
             Start_Time.Content = defaultStr;
+        }
+
+        // If another object pauses the audio, it will call this function to update the display
+        public void DisplayPaused()
+        {
+            if (!paused)
+            {
+                Play_Pause.Content = "play";
+                paused = true;
+            }
         }
 
         private void Play_Pause_Click(object sender, RoutedEventArgs e)

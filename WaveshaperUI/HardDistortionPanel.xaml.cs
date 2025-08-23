@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OxyPlot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,7 @@ namespace WaveshaperUI
         public HardDistortionPanel() : base(Effects.EffectType.HardDistortion)
         {
             distortion_effect = (Effects.Hard_Distortion_Effect?)EffectOperations.unpackEffect(effect);
+            LineColor = OxyColors.Red;
 
             base.DisplayModel.Title = "Hard Limiting Distortion";
             InitializeComponent();

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace WaveshaperUI
 {
@@ -68,8 +69,15 @@ namespace WaveshaperUI
         // Makes copies of the display series, since a single series be re-bound to a model
         public FunctionSeries MakeDisplaySeries()
         {
-            return new FunctionSeries(ProperFunction, -1.0f, 1.0f, 0.1f);
+            return new FunctionSeries(ProperFunction, -1.0f, 1.0f, 0.1f) { Color = LineColor };
         }
+
+        public void removeEffect()
+        {
+            EffectOperations.removeEffect(effect);
+        }
+
+        public OxyColor LineColor { get; protected set; }
 
     }
 

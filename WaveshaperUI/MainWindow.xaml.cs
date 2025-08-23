@@ -45,7 +45,7 @@ namespace WaveshaperUI
 
         private void CommandAdd_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            // TODO: Connect to selector panel
+            // TODO: Connect command to selector panel
         }
 
         private void CommandAdd_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -55,13 +55,16 @@ namespace WaveshaperUI
 
         private void Select_Click(object sender, RoutedEventArgs e)
         {
-            // I cannot do something like this directly, because there's no easy way to convert a method to a function for F#
-            //Playback.newFileAndContinue(1, (FSharpFunc<Unit, a>)File_Bar.Try_Set_Data);
-
-            // Thus, I created this signal setup, which almost makes it work like a background worker
+            File_Bar.DisplayPaused();
+            // We create and expect this action delegate to get around the fact that C# and F# functions don't convert easily
             Action<string> test = File_Bar.Try_Set_Data;
-            Playback.newFileAndContinue(1, File_Bar.Try_Set_Data);
+            Playback.newFileAndContinue(OvspControler.Rate, File_Bar.Try_Set_Data);
+        }
 
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            File_Bar.DisplayPaused();
+            Recording.saveCurrentFile();
         }
     }
 }

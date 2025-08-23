@@ -1,4 +1,5 @@
 ﻿using NAudio.Gui;
+using OxyPlot;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -29,6 +30,7 @@ namespace WaveshaperUI
         public TanhPanel() : base(Effects.EffectType.SmoothDistortion)
         {
             smooth_effect = (Effects.Smooth_Distortion_Effect?)EffectOperations.unpackEffect(effect);
+            LineColor = OxyColors.Goldenrod;
 
             base.DisplayModel.Title = "Hyperbolic Tangent Distortion";
             base.DisplayModel.TitleFontSize = 15;   // Ensure the title can fit

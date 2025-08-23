@@ -66,6 +66,10 @@ let generateFinalOutput (oversampling: int) (source: ISampleProvider): option<IS
     else
         None
 
+//let addMaxHandler (source: WaveInEvent) (action: Action<float32>) =
+//    let passMax (sender: obj) (args: WaveInEventArgs) =
+        
+
 // Since these important streams
 // (1) Cannot be reconstructed easily from current state
 // (2) Are accessed asynchronously upon input events from several other modules

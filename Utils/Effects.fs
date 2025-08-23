@@ -19,18 +19,10 @@ type EffectType =
     | Custom = 4
 
 // Individual effect types
-type Volume2(volume) =
-    member this.volume: float32 = volume
-
 type Volume_Effect = 
     {
     mutable smoothed_volume: float32
     mutable volume: float32}
-    
-type Hard_Distortion_Effect2(upper, lower, makeup) =
-    member this.upperLimit: float32 = upper
-    member this.lowerLimit: float32 = lower
-    member this.makeupGain: bool = makeup
 
 type Hard_Distortion_Effect =
     {
@@ -46,11 +38,19 @@ type Smooth_Distortion_Effect =
     mutable distortionFactor: float32
     mutable smoothFactor: float32}
 
+type Compression_Effect =
+    {
+    mutable threshold: float32
+    mutable ratio: float32
+    mutable attackTimeMilliseconds: int
+    mutable releaseTimeMilliseconds: int}
+
 // A discriminated union which serves as our overaching effect type
 type EffectUnion =
     | Volume of Volume_Effect
     | HardLimit of Hard_Distortion_Effect
     | Smooth of Smooth_Distortion_Effect
+    | Compression of Compression_Effect
 
 // --PROCCESSING FUNCTIONS-- //
 
@@ -138,7 +138,7 @@ let getGraphicsFunction (effect: EffectUnion): float->float =
 let makeDefault (effectType: EffectType): EffectUnion =
     match effectType with
         | EffectType.Volume -> 
-            Volume({volume = 0.5f; smoothed_volume = 0.5f})
+            Volume({volume = 0.8f; smoothed_volume = 0.8f})
         | EffectType.HardDistortion -> 
             HardLimit({upperLimit = 0.8f; upperLimitSmoothed = 0.8f; lowerLimit = -0.8f; lowerLimitSmoothed = -0.8f; makeupGain = false})
         | EffectType.SmoothDistortion ->

@@ -31,13 +31,13 @@ namespace WaveshaperUI
         {
             // This is an unchecked cast, however, this function just initialized effects, so we know what type it is
             volume_effect = (Effects.Volume_Effect?)EffectOperations.unpackEffect(effect);
+            LineColor = OxyColors.Green;
 
             base.DisplayModel.Title = "Volume";
             InitializeComponent();
             if (volume_effect != null) VolumeSlider.Value = volume_effect.volume * 10.0f;
+
         }
-
-
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (volume_effect != null)
