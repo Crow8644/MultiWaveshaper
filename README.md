@@ -22,6 +22,7 @@ Drag to re-order and create your own audio chain with unique distortion and warm
 This project uses the following libraries:
 - <a href="https://github.com/naudio">NAudio</a>
 - <a href="https://github.com/oxyplot">OxyPlot</a>
+- Inspiration, but no code, was taken from this excellent simular project: <a href="https://github.com/jenzy/WaveShaper">Waveshaper by Jani Bevk</a>
 
 ## Community Statement
 
