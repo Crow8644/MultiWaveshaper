@@ -34,9 +34,15 @@ namespace WaveshaperUI
             {
                 Rate = int.Parse(s);
                 Playback.oversamplingChanged(Rate);
+
+                UIAction?.Invoke();         // Will invoke only if UIAction is not null
+
             }
         }
 
         public int Rate { get; private set; }
+
+        // An action to be taken on other UIElements every time the selection is changed
+        public Action? UIAction { get; set; }
     }
 }

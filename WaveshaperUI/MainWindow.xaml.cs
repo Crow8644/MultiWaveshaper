@@ -21,7 +21,8 @@ namespace WaveshaperUI
         public MainWindow()
         {
             InitializeComponent();
-            
+
+            OvspControler.UIAction = File_Bar.DisplayPaused;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
