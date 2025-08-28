@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:WaveshaperUI"
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="800" Closed="Window_Closed">
+    <Window.Resources>
+        <!-- TODO: Find out how to add color pallet here -->
+    </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="CommandAdd_Executed" CanExecute="CommandAdd_CanExecute"/>
     </Window.CommandBindings>

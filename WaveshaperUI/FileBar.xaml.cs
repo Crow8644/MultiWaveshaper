@@ -18,6 +18,9 @@ namespace WaveshaperUI
 {
     /// <summary>
     /// Interaction logic for FileBar.xaml
+    /// This bar holds all the elements for controling the playback of the file
+    /// (Not selecting or saving though)
+    /// And works like a stripped back media player once a file is openned
     /// </summary>
     public partial class FileBar : UserControl
     {
@@ -53,6 +56,7 @@ namespace WaveshaperUI
             File_Label.Content = Streams.getFileName();
             End_Time.Content = Streams.getEndTimeDisplay();
             Start_Time.Content = defaultStr;
+            Progress.Value = 0.0;
         }
 
         // If another object pauses the audio, it will call this function to update the display
@@ -97,6 +101,7 @@ namespace WaveshaperUI
             }
         }
 
+        // This method only runs when the user drags the slider, not on the automatic framewise updates
         private void Progress_ValueChanged(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             Streams.getRepositionFunction().Invoke(Progress.Value / 10.0);

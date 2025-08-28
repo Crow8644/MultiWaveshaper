@@ -14,6 +14,10 @@ using System.Windows.Media;
 
 namespace WaveshaperUI
 {
+    /// <summary>
+    /// The abstract base class for the UI elements for each effect
+    /// Contains logic for stylizing the graph and a pointer to the effect struct in the background
+    /// </summary>
     public abstract class EffectPanel : UserControl
     {
         protected Effects.EffectUnion effect;
@@ -21,7 +25,7 @@ namespace WaveshaperUI
         public EffectPanel(Effects.EffectType effectType)
         {
             effect = EffectOperations.createEffect(effectType);
-            this.DataContext = this;
+            this.DataContext = this; // Lets all children access class members from the xaml
 
             this.DisplayModel = new PlotModel
             {
