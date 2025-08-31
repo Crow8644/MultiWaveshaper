@@ -273,7 +273,7 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <DockPanel Background="#686868" Height="60" Width="450" LastChildFill="True">
+        <DockPanel Height="60" Width="400" LastChildFill="True">
             <Button Name="Play_Pause" Content="play" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right" Click="Play_Pause_Click"></Button>
             <Button Name="Stop" Content="stop" Height="50" Width="50" HorizontalAlignment="Right" DockPanel.Dock="Right" Click="Stop_Click"></Button>
 

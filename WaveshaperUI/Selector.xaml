@@ -6,8 +6,11 @@
              xmlns:local="clr-namespace:WaveshaperUI"
              mc:Ignorable="d" 
              d:DesignHeight="420" d:DesignWidth="700">
-    <Grid Background="SlateGray" Height="420" Width="700">
-        <TabControl Name="Tabs" Background="Gray" TabStripPlacement="Bottom" SelectionChanged="Tabs_SelectionChanged">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/ColorPallete.xaml"></ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="{StaticResource Background}" Height="420" Width="700">
+        <TabControl Name="Tabs" Background="{StaticResource PanelBrush}" TabStripPlacement="Bottom" SelectionChanged="Tabs_SelectionChanged">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="AllowDrop" Value="True"/>

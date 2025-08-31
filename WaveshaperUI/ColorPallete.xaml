@@ -1,12 +1,35 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="Background">#5A676B</Color>
-    <Color x:Key="PanelColor">#7F7F7F</Color>
-    <Color x:Key="GraphBackground">#E3E3E3</Color>
-    <Color x:Key="Controlers">#C3C3C3</Color>
-    <Color x:Key="SliderDone">#7092BE</Color>
-    <Color x:Key="SliderUndone">#C3C3C3</Color>
+    <Color x:Key="BackgroundColor">#5A676B</Color>
+    <SolidColorBrush 
+        x:Key="Background" 
+        Color="{DynamicResource BackgroundColor}" />
     
+    <Color x:Key="PanelColor">#7F7F7F</Color>
+    <SolidColorBrush 
+        x:Key="PanelBrush" 
+        Color="{DynamicResource PanelColor}" />
+    
+    <Color x:Key="GraphBackgroundColor">#E3E3E3</Color>
+    <SolidColorBrush 
+        x:Key="GraphBackground" 
+        Color="{DynamicResource GraphBackgroundColor}" />
+    
+    <Color x:Key="ControlersColor">#C3C3C3</Color>
+    <SolidColorBrush 
+        x:Key="ControlersBrush" 
+        Color="{DynamicResource ControlersColor}" />
+    
+    <Color x:Key="SliderDoneColor">#7092BE</Color>
+    <SolidColorBrush 
+        x:Key="SliderDone" 
+        Color="{DynamicResource SliderDoneColor}" />
+    
+    <Color x:Key="SliderUndoneColor">#C3C3C3</Color>
+    <SolidColorBrush 
+        x:Key="SliderUndone" 
+        Color="{DynamicResource SliderUndoneColor}" />
+
     <!-- TODO: Determine good interactions for these -->
     <Color x:Key="SliderThumb">#000000</Color>
     <Color x:Key="SliderThumbClicked">#000000</Color>

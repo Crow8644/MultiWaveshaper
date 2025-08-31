@@ -5,19 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WaveshaperUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="800" Closed="Window_Closed">
+        Title="MainWindow" Height="520" Width="760" Closed="Window_Closed">
     <Window.Resources>
-        <!-- TODO: Find out how to add color pallet here -->
+        <ResourceDictionary Source="/ColorPallete.xaml"></ResourceDictionary>
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="CommandAdd_Executed" CanExecute="CommandAdd_CanExecute"/>
     </Window.CommandBindings>
-    <Grid>
+    <Grid Background="{StaticResource Background}">
         <!--<Button RenderTransformOrigin="0.482,0.514" Height="80" Width="180" Content="Run Tests" FontSize="30" Click="Button_Click"/>-->
-        <local:Selector VerticalAlignment="Bottom"></local:Selector>
-        <local:FileBar x:Name="File_Bar" VerticalAlignment="Top" HorizontalAlignment="Right"></local:FileBar>
-        <Button Name="Select" Height="60" Content="Select File" Width="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,5" Click="Select_Click"></Button>
-        <local:OversamplingControler x:Name="OvspControler" Background="#595959" Width="130" Height="60" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="200,0,0,0"></local:OversamplingControler>
-        <Button x:Name="Save" Height="60" Content="Save File" Width="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="103,5,0,0" Click="Save_Click"/>
+        <local:Selector VerticalAlignment="Bottom" Background="{StaticResource Background}"></local:Selector>
+        <local:FileBar x:Name="File_Bar" VerticalAlignment="Top" HorizontalAlignment="Right" BorderThickness="1,0,0,0" BorderBrush="White"></local:FileBar>
+        <local:OversamplingControler x:Name="OvspControler" Background="{StaticResource Background}" Width="130" Height="60" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="200,0,0,0"></local:OversamplingControler>
+        <Button Name="Select" Height="50" Content="Select File" Width="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,5" Click="Select_Click"></Button>
+        <Button x:Name="Save" Height="50" Content="Save File" Width="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="103,5,0,0" Click="Save_Click"/>
     </Grid>
 </Window>
